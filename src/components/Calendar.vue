@@ -1,20 +1,26 @@
 <template>
   <div class="main container-fluid"  v-if="checkUser >0">
-    <div class="Boardroom">
+     <div class="row">
+        
+    <div class="col-md-12 Boardroom">
       <button>Boardroom 1 </button>
       <button>Boardroom 2 </button>
       <button>Boardroom 3 </button>
       <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
-     
+     </div>
     </div>
 
     <!--<div class="ch-year ">
       <button class="btn btn-primary"v-on:click="counter  = 2">First day Su</button>
       <button class="btn btn-primary" v-on:click="counter  = 1">First day Mon</button>
     </div>-->
-  
-    <div class="head solo"><h1>Boardroom Booker</h1></div>
-      <div class="head"><b class="ltMonth" @click="ltMonth">«</b><b>{{months[currMonth]}} {{currYear}}</b><b class="gtMonth" @click="gtMonth">»</b></div>
+   <div class="row">  
+    <div class="col-md-5 head solo"><h1>Boardroom Booker</h1></div>
+      </div>
+       <div class="row">  
+      <div class="col-md-5 head"><b class="ltMonth" @click="ltMonth">«</b><b>{{months[currMonth]}} {{currYear}}</b><b class="gtMonth" @click="gtMonth">»</b></div>
+       </div>
+   
     <div id="app" class="col-md-9 ">
       <div id="calendar">
       
@@ -40,12 +46,12 @@
     </div>
     <div class="col-md-3">
       <div class="row">
-        <div class="col-md-8 booker-but">
+        <div class="col-md-6 booker-but">
         
          <button>Book it</button>
         </div>
-        <div class="col-md-8 booker-but">
-         <router-link to='/employees'><button  v-if="checkUser == 2">Employee List</button></router-link>
+        <div class="col-md-6 booker-but">
+         <router-link to='/EmployeeAdd'><button  v-if="checkUser == 2">Employee List</button></router-link>
         </div>
       </div>
     </div>
@@ -84,8 +90,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-       axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+      // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -216,7 +222,7 @@ export default {
 }
 #calendar {
  background:#8FBC8F;
-  width: 995px;
+  width: 850px;
   text-align: center;
   padding-bottom: 20px;
   padding-left: 20px;
@@ -260,7 +266,6 @@ time {
   line-height: 40px;
   height: 60px;
   font-size: 20px;
-  margin-left:-1300px;
 }
 .ltMonth,
 .gtMonth {

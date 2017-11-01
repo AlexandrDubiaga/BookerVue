@@ -14,6 +14,13 @@
                 <input v-model="login" type="text" id="login" name="login" placeholder="" >
             </div>
             </div>
+            <div class="control-group">
+            <!-- Password-->
+            <label class="control-label" for="email">Email</label>
+            <div class="controls">
+                <input v-model="email" type="email" id="email" name="email" placeholder="" >
+            </div>
+            </div>
         
             <div class="control-group">
             <!-- Password-->
@@ -26,7 +33,7 @@
             <!-- Button -->
             <div class="controls">
                 <button v-on:click="registration()" class="btn  btn-success">Add</button>
-                <router-link to='/calendar'><button class="btn btn-success">Back</button></router-link>
+                <router-link to='/EmployeeAdd'><button class="btn btn-success">Back</button></router-link>
             </div>
             </div>
         </fieldset>
@@ -42,11 +49,12 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'Employees',
+  name: 'EmployeesForm',
   data () {
     return {
       login: '',
       pass: '',
+      email:'',
       passConf: '',
       config: {
         headers: {
@@ -61,24 +69,23 @@ export default {
       registration: function () {
           var self = this
           self.errorMsg = ''
-          if (self.login && self.pass && self.passConf)
+          if (self.login && self.pass && self.email)
           {
               if (self.pass.length <= 3)
               {
                   self.errorMsg = 'Password should be at least 4 characters'
                   return false
               }
-              if(self.pass != self.passConf)
-              {
-                  self.errorMsg = 'Password fields do not match'
-                  return false
-              }
+              
             
                 var data = new URLSearchParams();
                 data.append('login', self.login);
+                data.append('email', self.email);
                 data.append('pass', self.pass);
-                axios.post('http://BoardroomBooker/user2/Booker/client/api/users/', data, self.config)
+                //axios.post('http://BoardroomBooker/user2/Booker/client/api/users/', data, self.config)
+                 axios.post('http://192.168.0.15/~user2/Booker/client/api/users/', data, self.config)
                     .then(function (response) {
+                       
                     if (response.data === 1)
                     {
                         self.success = 'success'
@@ -99,7 +106,7 @@ export default {
       checkUser: function(){
           var self = this
           if (localStorage['user']){
-              self.$router.push('/employees')
+             // self.$router.push('/employees')
           }
       }
   },

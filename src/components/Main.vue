@@ -9,7 +9,7 @@
             <input v-model="pass" type="password" class="form-control" name="password" placeholder="Password">
         </div>
          <div class="form-group">
-           <button v-on:click="loginFun()" type="submit" class="btn btn-primary">Sign In</button>
+           <button v-on:click="loginFun()" type="submit" class="btn btn-warning">Sign In</button>
         </div>
        
         <p><span class="alert-danger">{{errorMsg}}</span></p>
@@ -61,13 +61,12 @@ export default {
       self.errorMsg = ''
         if (self.login && self.pass)
         {
-         //axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
-           axios.put('http://BoardroomBooker/user2/Booker/client/api/users/', {
+         axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
+         //  axios.put('http://BoardroomBooker/user2/Booker/client/api/users/', {
             login: self.login,
             pass: self.pass 
           }, self.config)
           .then(function (response) {
-            console.log(response)
             if (response.data.id && response.data.hash)
             {
             
@@ -106,8 +105,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-           axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+        //   axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
               console.log(response)
                 if (self.user.hash === response.data[0].hash)

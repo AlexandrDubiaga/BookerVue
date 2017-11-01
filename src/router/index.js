@@ -4,7 +4,8 @@ import Main from '@/components/Main'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Calendar from '@/components/Calendar'
-import Employees from '@/components/Employees'
+import EmployeesForm from '@/components/EmployeesForm'
+import EmployeeAdd from '@/components/EmployeeAdd'
 
 
 Vue.use(Router)
@@ -23,10 +24,15 @@ export default new Router({
       component: Calendar
     },
     {
-      path: '/employees',
-      name: 'Employees',
-      component: Employees
+      path: '/employeesForm',
+      name: 'EmployeesForm',
+      component: EmployeesForm
     },
+    {
+      path: '/employeeAdd',
+      name: 'EmployeeAdd',
+      component: EmployeeAdd
+    }
   
   ]
 })
