@@ -6,6 +6,7 @@ import VueAxios from 'vue-axios'
 import Calendar from '@/components/Calendar'
 import EmployeesForm from '@/components/EmployeesForm'
 import EmployeeAdd from '@/components/EmployeeAdd'
+import AddAppointment from '@/components/AddAppointment'
 
 
 Vue.use(Router)
@@ -32,7 +33,13 @@ export default new Router({
       path: '/employeeAdd',
       name: 'EmployeeAdd',
       component: EmployeeAdd
+    },
+    {
+      path: '/addAppointment',
+      name: 'AddAppointment',
+      component: AddAppointment
     }
+
   
   ]
 })

@@ -45,20 +45,17 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="row">
-        <div class="col-md-6 booker-but">
-        <table class="tableButton">
-          <tr>
-          <td><button>Book it</button></td>
-          </tr>
-          <tr>
-           <td><router-link to='/EmployeeAdd'><button  v-if="checkUser == 2">Employee List</button></router-link></td>
-          </tr>
-        </table>
+     
+        <div class="col-md-12 booker-but">
+          <td><router-link to='/AddAppointment'><button class="btn btn-success">Book it</button></router-link></td>
+        
+         
+           <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>
+         
         
         </div>
       
-      </div>
+    
     </div>
   </div>
 </template>
@@ -95,8 +92,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+        // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
