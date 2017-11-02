@@ -47,12 +47,17 @@
     <div class="col-md-3">
       <div class="row">
         <div class="col-md-6 booker-but">
+        <table class="tableButton">
+          <tr>
+          <td><button>Book it</button></td>
+          </tr>
+          <tr>
+           <td><router-link to='/EmployeeAdd'><button  v-if="checkUser == 2">Employee List</button></router-link></td>
+          </tr>
+        </table>
         
-         <button>Book it</button>
         </div>
-        <div class="col-md-6 booker-but">
-         <router-link to='/EmployeeAdd'><button  v-if="checkUser == 2">Employee List</button></router-link>
-        </div>
+      
       </div>
     </div>
   </div>
@@ -90,8 +95,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-      // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+        //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)

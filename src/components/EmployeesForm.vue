@@ -5,13 +5,13 @@
       <div v-if="success !== 'success'">
         <fieldset>
             <div id="legend">
-            <legend class="title">Добавление пользывателя</legend>
+            <legend class="title">Add new Employees</legend>
             </div>
             <div class="control-group">
             <!-- login -->
-            <label class="control-label"  for="login">Логин</label>
+            <label class="control-label"  for="login">login</label>
             <div class="controls">
-                <input v-model="login" type="text" id="login" name="login" placeholder="" >
+                <input v-model="login"   type="text" id="login" name="login" placeholder="" >
             </div>
             </div>
             <div class="control-group">
@@ -24,7 +24,7 @@
         
             <div class="control-group">
             <!-- Password-->
-            <label class="control-label" for="password">Пароль</label>
+            <label class="control-label" for="password">password</label>
             <div class="controls">
                 <input v-model="pass" type="password" id="password" name="password" placeholder="" >
             </div>
@@ -32,15 +32,15 @@
             <div class="control-group">
             <!-- Button -->
             <div class="controls">
-                <button v-on:click="registration()" class="btn  btn-success">Add</button>
-                <router-link to='/EmployeeAdd'><button class="btn btn-success">Back</button></router-link>
+                <button v-on:click="registration()" class="btn  btn-success">Add Employee</button>
+               <router-link class="link" to='/EmployeeAdd'><button class="btn btn-success">Back</button></router-link>
             </div>
             </div>
         </fieldset>
     </div>
     <div v-else class="success">
       <h2>Thank you <strong>{{fullName}}</strong>, </h2>
-      <router-link class="link" to='/calendar'> to calendar</router-link>
+      <router-link class="link" to='/EmployeeAdd'>Back to employees list</router-link>
     </div>
     </div>
  
@@ -82,10 +82,10 @@ export default {
                 data.append('login', self.login);
                 data.append('email', self.email);
                 data.append('pass', self.pass);
-                //axios.post('http://BoardroomBooker/user2/Booker/client/api/users/', data, self.config)
-                 axios.post('http://192.168.0.15/~user2/Booker/client/api/users/', data, self.config)
+                axios.post('http://BoardroomBooker/user2/Booker/client/api/employees/', data, self.config)
+                 //axios.post('http://192.168.0.15/~user2/Booker/client/api/employees/', data, self.config)
                     .then(function (response) {
-                       
+                     
                     if (response.data === 1)
                     {
                         self.success = 'success'
@@ -106,7 +106,9 @@ export default {
       checkUser: function(){
           var self = this
           if (localStorage['user']){
-             // self.$router.push('/employees')
+             self.$router.push('/EmployeesForm')
+          }else{
+                 self.$router.push('/')
           }
       }
   },
@@ -128,5 +130,14 @@ export default {
 {
     position:absolute;
     top:10px;
+}
+input
+{
+    height:30px;
+    border-radius:10px;
+}
+button
+{
+    margin-top:10px;
 }
 </style>
