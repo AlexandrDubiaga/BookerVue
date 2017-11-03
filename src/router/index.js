@@ -35,7 +35,7 @@ export default new Router({
       component: EmployeeAdd
     },
     {
-      path: '/addAppointment',
+      path: '/addAppointment/:id',
       name: 'AddAppointment',
       component: AddAppointment
     }

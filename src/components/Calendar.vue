@@ -9,7 +9,6 @@
             Room is: <strong>{{selRoom.name}}</strong>
           </p>
         
-
     </div>
 
     <!--<div class="ch-year ">
@@ -49,7 +48,7 @@
     <div class="col-md-3">
      
         <div class="col-md-12 booker-but">
-          <td><router-link to='/AddAppointment'><button class="btn btn-success">Book it</button></router-link></td>
+          <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
         
          
            <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>
@@ -88,10 +87,12 @@ export default {
       selRoomFunction: function(index){
       var self = this
       self.selRoom = self.rooms[index]
+      console.log(self.selRoom.id)
     },
     getRooms: function(){
       var self = this
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -111,8 +112,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+        // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -204,6 +205,7 @@ export default {
   created(){
     this.checkUserFun()
      this.getRooms()
+     
   }
 };
 </script>
