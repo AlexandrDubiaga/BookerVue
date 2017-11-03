@@ -36,7 +36,7 @@ export default {
   watch:{
     chooseUserId: function(){
        var self = this
-      console.log(self.chooseUserId)
+      //console.log(self.chooseUserId)
     }
   },
   
@@ -96,7 +96,7 @@ export default {
             .then(function (response) {
               if (response.status == 200) {
                   self.boardroom = response.data;
-                  console.log( self.boardroom)
+                 
                 
               }
             else{
@@ -110,9 +110,11 @@ export default {
       addEvent: function () {
           var self = this
           console.log("add event")
-               /* var data = new URLSearchParams();
+               var data = new URLSearchParams();
                 data.append('id_room', self.boardroom[0].id);
                 data.append('id_user', self.chooseUserId);
+                console.log(data);
+                /*
                 //axios.post('http://BoardroomBooker/user2/Booker/client/api/event/', data, self.config)
                  axios.post('http://192.168.0.15/~user2/Booker/client/api/event/', data, self.config)
                     .then(function (response) {
