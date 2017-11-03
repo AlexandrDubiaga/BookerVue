@@ -1,13 +1,15 @@
 <template>
   <div class="main container-fluid"  v-if="checkUser >0">
      <div class="row">
+      <p class="rooms">
+            <button v-for="(room,index) in rooms" v-on:click="selRoomFunction(index)">{{room.name}}</button>
+             <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
+          </p>
+          <p class="roomSel">
+            Room is: <strong>{{selRoom.name}}</strong>
+          </p>
         
-    <div class="col-md-12 Boardroom">
-      <button>Boardroom 1 </button>
-      <button>Boardroom 2 </button>
-      <button>Boardroom 3 </button>
-      <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
-     </div>
+
     </div>
 
     <!--<div class="ch-year ">
@@ -67,6 +69,8 @@ export default {
   
     return {
       checkUser: 0,
+        rooms: [],
+      selRoom: {},
       counter: 2,
       typeC:'',
       inst_date: new Date(),
@@ -81,6 +85,21 @@ export default {
     };
   },
    methods: {
+      selRoomFunction: function(index){
+      var self = this
+      self.selRoom = self.rooms[index]
+    },
+    getRooms: function(){
+      var self = this
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+          .then(function (response) {
+            self.rooms = response.data
+            self.selRoom = self.rooms[0]
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
       logoutFun: function(){
       var self = this
       delete localStorage['user'] 
@@ -92,8 +111,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-        // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -184,6 +203,7 @@ export default {
   },
   created(){
     this.checkUserFun()
+     this.getRooms()
   }
 };
 </script>
@@ -288,7 +308,7 @@ time {
 }
 .exit
 {
-margin-left:300px;
+float:right;
 }
 
 
