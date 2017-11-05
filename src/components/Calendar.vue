@@ -2,7 +2,7 @@
   <div class="main container-fluid"  v-if="checkUser >0">
      <div class="row">
       <p class="rooms">
-            <button v-for="(room,index) in rooms" v-on:click="selRoomFunction(index)">{{room.name}}</button>
+            <button v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
              <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
           </p>
           <p class="roomSel">
@@ -84,15 +84,11 @@ export default {
     };
   },
    methods: {
-      selRoomFunction: function(index){
-      var self = this
-      self.selRoom = self.rooms[index]
-      console.log(self.selRoom.id)
-    },
+ 
     getRooms: function(){
       var self = this
-      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -101,6 +97,25 @@ export default {
         console.log(error)
       })
     },
+    getAppointmentByIdUserBoardroomId: function(index){
+   
+      var self = this
+      self.selRoom = self.rooms[index]
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
+            .then(function (response) {
+              console.log(response)
+              if (response.status == 200) {
+                  self.boardroom = response.data;   
+              }
+            else{
+              self.errors = response.data
+            }
+        })
+        .catch(function (error) {
+          console.log(error)
+        });
+      },
       logoutFun: function(){
       var self = this
       delete localStorage['user'] 
@@ -112,8 +127,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-        // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -203,8 +218,10 @@ export default {
   components: {
   },
   created(){
+    var self = this
     this.checkUserFun()
      this.getRooms()
+    
      
   }
 };
