@@ -21,13 +21,13 @@
       </div>
       <div class="title">
           <button v-on:click="minusMonth()" class="btn btn-default">&#9668;</button>
-         
+          <p>{{getMonth}} {{currentYear}}</p>
           <button v-on:click="plusMonth()" class="btn btn-default">&#9658;</button>
         </div>
         <table class="table table-bordered">
           <thead>
           <tr class="info">
-          
+            <th v-for="wday in getDays">{{wday}}</th>
           </tr>
           </thead>
           <tbody>
@@ -40,10 +40,7 @@
           </tr>
           </tbody>
         </table>
-        
-      
-   
-    
+
     <div class="col-md-3">  
         <div class="col-md-12 booker-but">
           <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
@@ -106,6 +103,25 @@ export default {
         console.log(error)
       })
     },
+    getEvents: function(){
+   
+      var self = this
+  
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
+            .then(function (response) {
+              if (response.status == 200) {
+                self.eventsMonth = response.data;  
+                 self.getArrayCalendar()
+              }
+            else{
+              self.errors = response.data
+            }
+        })
+        .catch(function (error) {
+          console.log(error)
+        });
+      },
     getAppointmentByIdUserBoardroomId: function(index){
    
       var self = this
@@ -115,7 +131,7 @@ export default {
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
-                 self.getArrayCalendar()
+                // self.getArrayCalendar()
               }
             else{
               self.errors = response.data
@@ -233,7 +249,7 @@ export default {
         self.currentMonth = 0
         self.currentYear += 1
       }
-      self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+      self.getEvents()
       self.getArrayCalendar()
       
     },
@@ -244,7 +260,7 @@ export default {
         self.currentMonth = 11
         self.currentYear -= 1
       }
-      self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+      self.getEvents()
       self.getArrayCalendar()
     },
     firstMonday: function(){
@@ -323,11 +339,11 @@ export default {
     computed: {
     getDays(){
       var self = this
-      return getWeekDays(self.weekDays)
+      return self.weekDays
     },
     getMonth(){
       var self = this
-      return getNameMonth(self.nameMonth)
+      return self.nameMonth
     },
     currentDay(){
       var self = this
@@ -349,7 +365,7 @@ export default {
     this.checkUserFun()
     this.getMonthYear()
     this.getRooms()
-    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+    this.getEvents()
     
      
   }
