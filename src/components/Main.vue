@@ -75,7 +75,6 @@ export default {
               self.user.firstName = response.data.login
               self.role = response.data.role
               localStorage['user'] = JSON.stringify(self.user)
-            
               self.checkUserFun()
               self.getCheck()
             if (response.data.role) {
@@ -87,7 +86,8 @@ export default {
                 }
             return true;
           } else {
-            self.error = response.data;
+           
+             self.errorMsg = 'Wrong password or login'
             
           }
         })
@@ -119,6 +119,7 @@ export default {
                 else
                 {
                   self.checkUser = ''
+                  
                   delete localStorage['user']
                 }
             })

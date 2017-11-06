@@ -4,11 +4,12 @@
       <p class="rooms">
             <button v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
              <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
+              <p><span class="">{{uservar}}</span></p>
           </p>
           <p class="roomSel">
             Room is: <strong>{{selRoom.name}}</strong>
-          </p>
-        
+      
+          </p> 
     </div>
 
     <!--<div class="ch-year ">
@@ -24,39 +25,21 @@
    
     <div id="app" class="col-md-9 ">
       <div id="calendar">
-      
-          <div v-if="counter == 2">
           <div class="week"><b v-for="day in daysSun">{{day}}</b></div>
               <div class="days">
                 <time v-if="nullWeek !==7" v-for="blank in nullWeek">&nbsp;</time>
                 <time v-for="i in daysInMonth" :class="{currDay: i == currDay}"> 
-                {{i}}
+              {{i}}
                 </time>
-              </div>
           </div>
-          <div v-else="counter == 1">
-          <div class="week"><b v-for="day in daysMon">{{day}}</b></div>
-              <div class="days">
-                <time v-for="blank in nullWeek1">&nbsp;</time>
-                <time v-for="i in daysInMonth" :class="{currDay: i == currDay}"> 
-                  {{i}} 
-                </time>
-              </div>
-          </div>
-      </div>
+           </div>
     </div>
-    <div class="col-md-3">
-     
+    <div class="col-md-3">  
         <div class="col-md-12 booker-but">
           <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
-        
-         
-           <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>
-         
-        
+           <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>    
         </div>
       
-    
     </div>
   </div>
 </template>
@@ -67,8 +50,11 @@ export default {
   data() {
   
     return {
+      uservar:'',
       checkUser: 0,
-        rooms: [],
+      dataInCalendar:'',
+      rooms: [],
+      timeData:{},
       selRoom: {},
       counter: 2,
       typeC:'',
@@ -84,7 +70,6 @@ export default {
     };
   },
    methods: {
- 
     getRooms: function(){
       var self = this
       axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
@@ -104,9 +89,16 @@ export default {
           //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
           axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
             .then(function (response) {
-              console.log(response)
               if (response.status == 200) {
-                  self.boardroom = response.data;   
+                  self.dataInCalendar = response.data;  
+                  console.log( self.dataInCalendar )
+                  self.timeData = self.dataInCalendar[index]
+                  /*self.start+= self.timeData.time_start
+                   self.start+= '-'
+                    self.start+= self.timeData.time_end 
+
+                     console.log(self.start)*/
+                  
               }
             else{
               self.errors = response.data
@@ -137,15 +129,15 @@ export default {
                   {
                     self.checkUser = 2;
                     self.role = response.data[0].role
-                         console.log( self.checkUser)
-
+                    self.uservar = "Hello,"+ response.data[0].login
+               
                     return true
                   }
                    if(response.data[0].role == "user")
                   {
                     self.checkUser = 1;
                     self.role = response.data[0].role
-                      console.log( self.checkUser)
+                   self.uservar = "Hello,"+ response.data[0].login
                     return true
                   }
                   
@@ -328,6 +320,10 @@ time {
 .exit
 {
 float:right;
+}
+.link
+{
+  font-size:15px;
 }
 
 

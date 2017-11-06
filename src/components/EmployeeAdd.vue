@@ -62,27 +62,8 @@ export default {
     }
   },
   methods: {
-    deleteEmployeeById: function($id){
-      var self = this
-     axios.delete('http://BoardroomBooker/user2/Booker/client/api/users/' + $id)
-     //axios.delete('http://192.168.0.15/~user2/Booker/client/api/users/' + $id)
-            .then(function (response) {
-              if (response.data === 1)
-                    {
-                     
-                        self.success = 'Employee deleted'
-                        console.log( self.success)
-                    }
-                    else
-                    {
-                        self.errorMsg = 'error'
-                    }            
-        })
-    },
-  
-  
-  
    
+
     getAllUsers: function(){
       var self = this
           //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
@@ -100,6 +81,23 @@ export default {
           console.log(error)
         });
       },
+       deleteEmployeeById: function($id){
+      var self = this
+     axios.delete('http://BoardroomBooker/user2/Booker/client/api/users/' + $id)
+     //axios.delete('http://192.168.0.15/~user2/Booker/client/api/users/' + $id)
+            .then(function (response) {
+              if (response.data === 1)
+                    {
+                     
+                        self.success = 'Employee deleted'
+                        console.log( self.success)
+                    }
+                    else
+                    {
+                        self.errorMsg = 'error'
+                    }            
+        })
+    },
   computed: {
    
   },

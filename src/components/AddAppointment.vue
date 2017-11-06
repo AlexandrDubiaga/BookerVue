@@ -4,7 +4,7 @@
                 {{ success }}
             </div>
         <div>
-          <p>1. Booked for:  {{boardroom[0].name}}</p>
+          <p v-for="s in boardroom">1. Booked for:  {{s.name}}</p>
           <select class="firstSelect"   v-model="chooseUserId" >
             <option :value="user.id" v-for="user in users">{{user.login}}</option>  
           </select>
