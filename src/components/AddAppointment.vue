@@ -172,8 +172,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -192,8 +192,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              // console.log(response)
                 if (self.user.hash === response.data[0].hash)
@@ -221,8 +221,8 @@ export default {
      
      getBoadRoomById: function(id){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
             .then(function (response) {
               if (response.status == 200) {
                   self.boardroom = response.data;
@@ -247,22 +247,25 @@ export default {
           if(self.timeEndMidnight == '1'){
              self.timeEndHour += 12
           }
+           var timeNow = (Date.now()/1000).toFixed()
+
       var eventStart = new Date(self.yearsArr[self.year],self.month,self.days[self.day],self.timeStartHour,self.timeStartMin)
       var eventEnd = new Date(self.yearsArr[self.year],self.month,self.days[self.day],self.timeEndHour,self.timeEndMin)
-      var dayCreation = new Date(currentData.getFullYear(), currentData.getMonth(), currentData.getDate()).getTime() / 1000
-               var data = new URLSearchParams();
+      //var dayCreation = new Date(currentData.getFullYear(), currentData.getMonth(), currentData.getDate()).getTime() / 1000
+              console.log(self.desc)
+              var data = new URLSearchParams();
                 data.append('id_room', self.boardroom[0].id);
                 data.append('id_user', self.chooseUserId);
                 data.append('description', self.desc);
                 data.append('time_start', eventStart.getTime() / 1000);
                 data.append('time_end', eventEnd.getTime() / 1000);
-                data.append('create_time', dayCreation);
+                data.append('create_time', timeNow);
                  if(self.recurring){
                 data.append('recurningType', self.recurringType);
                 data.append('id_parent', self.recurringDuration);
                 }
-                axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
-                 //axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
+                //axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+                 axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
                     .then(function (response) {
                      console.log(response)
                     if (response.data === 1)

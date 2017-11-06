@@ -8,8 +8,8 @@
           </p>
           <p class="roomSel">
             Room is: <strong>{{selRoom.name}}</strong>
-      
           </p> 
+          
     </div>
 
     <!--<div class="ch-year ">
@@ -19,21 +19,31 @@
    <div class="row">  
     <div class="col-md-5 head solo"><h1>Boardroom Booker</h1></div>
       </div>
-       <div class="row">  
-      <div class="col-md-5 head"><b class="ltMonth" @click="ltMonth">«</b><b>{{months[currMonth]}} {{currYear}}</b><b class="gtMonth" @click="gtMonth">»</b></div>
-       </div>
+      <div class="title">
+          <button v-on:click="minusMonth()" class="btn btn-default">&#9668;</button>
+         
+          <button v-on:click="plusMonth()" class="btn btn-default">&#9658;</button>
+        </div>
+        <table class="table table-bordered">
+          <thead>
+          <tr class="info">
+          
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="week in weeks">
+            <td class="day" v-for="day in week" :class="{date: day[0] == currentDay}">{{day[0]}}
+                <p  class="events" v-if="day.length > 1" v-for="event in day[1]" >
+                  <button class="btn btn-link" v-on:click="showEvent(event)" >{{event.timeString}}</button>
+                  </p>
+              </td>  
+          </tr>
+          </tbody>
+        </table>
+        
+      
    
-    <div id="app" class="col-md-9 ">
-      <div id="calendar">
-          <div class="week"><b v-for="day in daysSun">{{day}}</b></div>
-              <div class="days">
-                <time v-if="nullWeek !==7" v-for="blank in nullWeek">&nbsp;</time>
-                <time v-for="i in daysInMonth" :class="{currDay: i == currDay}"> 
-              {{i}}
-                </time>
-          </div>
-           </div>
-    </div>
+    
     <div class="col-md-3">  
         <div class="col-md-12 booker-but">
           <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
@@ -66,14 +76,28 @@ export default {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
-      }
+      },
+       msg: '',
+      errorMsg: '',
+      date: new Date(),
+      weeks: [],
+      currentMonth: '',
+      currentYear: '',
+      rooms: [],
+      eventsMonth: [],
+      sentEvent: {}
     };
   },
    methods: {
+      showEvent: function(event){
+      var self = this
+      self.showModal = true
+      self.sentEvent = event
+    },
     getRooms: function(){
       var self = this
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -86,19 +110,12 @@ export default {
    
       var self = this
       self.selRoom = self.rooms[index]
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
             .then(function (response) {
               if (response.status == 200) {
-                  self.dataInCalendar = response.data;  
-                  console.log( self.dataInCalendar )
-                  self.timeData = self.dataInCalendar[index]
-                  /*self.start+= self.timeData.time_start
-                   self.start+= '-'
-                    self.start+= self.timeData.time_end 
-
-                     console.log(self.start)*/
-                  
+                self.eventsMonth = response.data;  
+                 self.getArrayCalendar()
               }
             else{
               self.errors = response.data
@@ -108,7 +125,151 @@ export default {
           console.log(error)
         });
       },
-      logoutFun: function(){
+       getMonthYear: function()
+    {
+      var self = this
+      self.currentMonth =self.date.getMonth()
+      self.currentYear = self.date.getFullYear()
+    },
+    getArrayCalendar: function(){
+      var self = this
+      self.weeks = []
+      var date = new Date(self.currentYear, self.currentMonth)
+      self.weeks[0] = []
+      for (var i=0; i < self.getNumDay(date); i++)
+      {
+        self.weeks[0].push([])
+      }
+      var count = 0
+      while (date.getMonth() == self.currentMonth)
+      {
+        self.weeks[count].push([date.getDate()])
+        if (self.getNumDay(date) % 7 == 6)
+        {
+          count++
+          self.weeks[count] = []
+        }
+        date.setDate(date.getDate()+1)
+      }
+      self.addEventsToCal()
+    },
+    addEventsToCal: function(){
+      var self = this
+      var calendar = self.weeks
+      calendar.forEach(function(week) {
+        week.forEach(function(day){
+          if (day[0]){
+            self.eventsMonth.forEach(function(event)
+            {
+              if (event.id_room == self.selRoom.id)
+              {
+              var dateEvStart = new Date(event.time_start)
+              var dateEvEnd = new Date(event.time_end)
+              var date = new Date(self.currentYear, self.currentMonth+1, day[0])
+              if (dateEvStart.getDate() === day[0])
+              {
+                  var str = ''
+                  var start = dateEvStart.getHours()
+                  var end = dateEvEnd.getHours()
+                  if (dateEvStart.getMinutes() == 0)
+                  {
+                  start +=':' + dateEvStart.getMinutes() + '0-'
+                  }
+                  else{
+                  start +=':' + dateEvStart.getMinutes() + '-'
+                  }
+                  if (dateEvEnd.getMinutes() == 0)
+                  {
+                    end += ':' + dateEvEnd.getMinutes() + '0'
+                  }
+                  else{
+                    end += ':' + dateEvEnd.getMinutes() 
+                  }
+                  str = start + end
+                  event.timeString = str
+                  if (day.length == 1)
+                  {
+                    day.push([event])
+                  }
+                  else{
+                    day[1].push(event)
+                  }
+              }
+              }
+            })
+          }
+        })
+      });
+    },
+    getNumDay: function(date){
+      var self = this
+      var numDay = date.getDay()
+      if (self.weekDays == 'mon')
+      {
+        if (numDay == 0)
+        {
+          numDay = 7
+        }
+        return numDay - 1
+      }
+      if (self.weekDays == 'ru')
+      {
+        if (numDay == 0)
+        {
+          numDay = 7
+        }
+        return numDay - 1
+      }
+      else
+      {
+        return numDay
+      }
+    },
+    plusMonth: function(){
+      var self = this
+      self.currentMonth += 1
+      if (self.currentMonth > 11)
+      {
+        self.currentMonth = 0
+        self.currentYear += 1
+      }
+      self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+      self.getArrayCalendar()
+      
+    },
+    minusMonth: function(){
+      var self = this
+      self.currentMonth -= 1
+      if (self.currentMonth < 0){
+        self.currentMonth = 11
+        self.currentYear -= 1
+      }
+      self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+      self.getArrayCalendar()
+    },
+    firstMonday: function(){
+      var self = this 
+      self.weekDays = 'mon'
+      self.getArrayCalendar()
+    },
+    firstSunday: function(){
+      var self = this
+      self.weekDays = 'sun'
+      self.getArrayCalendar()
+    },
+    getRu: function(){
+      var self = this
+      self.nameMonth = 'ru'
+      self.weekDays = 'ru'
+      self.getArrayCalendar()
+    },
+    getEn: function(){
+      var self = this
+      self.nameMonth = 'en'
+      self.weekDays = 'sun'
+      self.getArrayCalendar()
+    },
+     logoutFun: function(){
       var self = this
       delete localStorage['user'] 
        self.checkUser = ''
@@ -119,8 +280,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -157,62 +318,38 @@ export default {
         return false
       }
     },
-    
-
-    ltMonth() {
-      var self = this
-      
-      self.inst_date = new Date( self.currYear, self.currMonth-1 )
-    },
-    gtMonth() {
-      var self = this
-      self.inst_date = new Date( self.currYear, self.currMonth+1 )
-    }
   },
-    computed: {    
-    currYear() {
+ 
+    computed: {
+    getDays(){
       var self = this
-      return self.inst_date.getFullYear()
+      return getWeekDays(self.weekDays)
     },
-    currMonth() {
+    getMonth(){
       var self = this
-      return self.inst_date.getMonth()
+      return getNameMonth(self.nameMonth)
     },
-    currWD() {
+    currentDay(){
       var self = this
-      return self.inst_date.getDay()
+      if (self.date.getMonth() == self.currentMonth && self.date.getFullYear() == self.currentYear)
+      {
+        return self.date.getDate()
+      }
+      else
+      {
+        return false
+      }
     },
-    currDay() {
-      var self = this
-      const now = new Date();
-      if ( self.inst_date.getMonth() == now.getMonth() && self.inst_date.getFullYear() == now.getFullYear() ) {
-        return now.getDate()
-      } else return
-    },
-    daysInMonth() {
-      var self = this
-      return new Date(self.currYear, self.currMonth+1, 0).getDate();
-    },
-    nullWeek() {
-      var self = this
-      var res =  new Date(self.currYear, self.currMonth, 0).getDay()+1;
-      return res
-    },
-    nullWeek1() {
-       var self = this
-       var res = new Date(self.currYear, self.currMonth, 0).getDay();
-       if(res == 0) {
-         res = 1
-       }
-       return res
-    }
+     
   },
   components: {
   },
   created(){
     var self = this
     this.checkUserFun()
-     this.getRooms()
+    this.getMonthYear()
+    this.getRooms()
+    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
     
      
   }
@@ -220,102 +357,89 @@ export default {
 </script>
 
 <style scoped>
-.booker-but {
-  margin-top: 50px;
+.shadow {
+  padding: 0;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
-.boardroom-list {
-  margin-top: 5px;
-  margin-bottom: 2px;
-
+.date{
+  background-color: #b1b1da;
+  color: #b12d1f;
+  font-weight: bold;
 }
-.boardroom-list button {
-  margin-left:30px;
-  margin-right:30px;
+tbody{
+  background-color: white;
 }
-.ch-year {
- padding-bottom: 20px;
-}
-.ch-year button {
- margin-left:20px;
-  margin-right:20px;
-}
-#app {
-  margin: 0 auto;
-   display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  font-family: sans-serif;
-}
-
-.week,
-.days {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-#calendar {
- background:#8FBC8F;
-  width: 850px;
+.title{
   text-align: center;
-  padding-bottom: 20px;
-  padding-left: 20px;
-  margin-left: 10%;
+  color: darkblue;
+  font-size: 17px;
+  font-weight: bold;
+  background-color: #d9edf7;
+  padding-top: 10px;
 }
-.week {
-  border-bottom: 1px solid rgba(204,204,204,0.3);
-  line-height: 2em;
-  font-size: 20px;
-  color: #0C0C0C;
+.title p{
+  width: 150px;
+  display: inline-table;
 }
-.week b {
-  font-weight: normal;
-  color: #546A8C;
-  width: 155px;
-  height: 50px;
-
+.title button{
+  background-color: #d9edf7;
+  border-color: #d9edf7;
 }
-.days {
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  line-height: 40px;
-  text-align: left;
-  font-size: 20px;
-  color: #0C0C0C;
-}
-time {
-  width: 137px;
-  height: 100px;
-  border: 1px solid #D4D4D4;
-}
-.currDay {
-  background: #B9B9B9;
-  border: 1px solid #546A8C;
-}
-.head {
-
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
-  line-height: 40px;
-  height: 60px;
-  font-size: 20px;
-}
-.ltMonth,
-.gtMonth {
+.day{
   cursor: pointer;
-  padding: 0 1em;
-  background: rgba(238,238,238,0.3);
-  font-size: 20px;
+  width: 122.61px;
+  height: 118.33px;
 }
-.ltMonth:hover,
-.gtMonth:hover {
-  background: rgba(238,238,238,0.2);
-  color: #f00;
-  font-size: 24px;
+td:hover{
+  background: #c7e3f1;
 }
-.Boardroom
-{
-  background:#00FF7F;
+.ru-en-btn{
+  margin-bottom: 15px;
+}
+.mon-sun-btn{
+  margin-bottom: 15px;
+  width: 115px;
+}
+.right-top-menu{
+  height: 100px;
+}
+.btn-Book-Emp{
+  height: 300px;
+}
+.btn-Book-Emp button{
+  margin-top: 70px;
+  width: 115px;
+}
+.btnRoom{
+  border-radius: 0;
+}
+.selBtn{
+    color: red;
+}
+.rooms{
+  margin: 0;
+  background-color: #d9edf7;
+  text-align: center;
+}
+.roomSel{
+  margin: 0;
+  background-color: #d9edf7;
+  text-align: center;
+  color: darkblue;
+  font-size: 18px;
+}
+.events{
+  text-align: center;
+  color: black;
+  font-weight: normal; 
+  margin: 0;
+}
+.events button{
+  padding: 0;
+}
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
 }
 .exit
 {
