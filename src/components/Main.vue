@@ -61,8 +61,8 @@ export default {
       self.errorMsg = ''
         if (self.login && self.pass)
         {
-         axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
-          //axios.put('http://BoardroomBooker/user2/Booker/client/api/users/', {
+         //axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
+          axios.put('http://BoardroomBooker/user2/Booker/client/api/users/', {
             login: self.login,
             pass: self.pass 
           }, self.config)
@@ -105,8 +105,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-        // axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
               console.log(response)
                 if (self.user.hash === response.data[0].hash)

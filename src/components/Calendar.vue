@@ -17,18 +17,22 @@
       <button class="btn btn-primary" v-on:click="counter  = 1">First day Mon</button>
     </div>-->
    <div class="row">  
-    <div class="col-md-5 head solo"><h1>Boardroom Booker</h1></div>
+    <div class="col-md-5  solo"><h1>Boardroom Booker</h1></div>
       </div>
       <div class="title">
-          <button v-on:click="minusMonth()" class="btn btn-default">&#9668;</button>
-          <p>{{getMonth}} {{currentYear}}</p>
-          <button v-on:click="plusMonth()" class="btn btn-default">&#9658;</button>
+          <p class="leftCursor" v-on:click="minusMonth()">«</p>
+          <p>{{months[currentMonth]}} {{currentYear}}</p>
+           <p class="rightCursor" v-on:click="plusMonth()">»</p>
         </div>
+        
+   
+        
         <table class="table table-bordered">
           <thead>
-          <tr class="info">
-            <th v-for="wday in getDays">{{wday}}</th>
+          <tr class="heads">
+            <th v-for="wday in daysSun">{{wday}}</th>
           </tr>
+         
           </thead>
           <tbody>
           <tr v-for="week in weeks">
@@ -40,12 +44,13 @@
           </tr>
           </tbody>
         </table>
-
-    <div class="col-md-3">  
+         <div class="col-md-3 linkDiv">  
         <div class="col-md-12 booker-but">
           <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
            <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>    
         </div>
+          </div>
+
       
     </div>
   </div>
@@ -93,8 +98,8 @@ export default {
     },
     getRooms: function(){
       var self = this
-      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -106,9 +111,9 @@ export default {
     getEvents: function(){
    
       var self = this
-  
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
+    
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -126,12 +131,20 @@ export default {
    
       var self = this
       self.selRoom = self.rooms[index]
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ self.selRoom.id)
+        var year = self.currentYear
+      var month = self.currentMonth+1
+      var dateString = year + '-' + month 
+        var data = new URLSearchParams();
+        data.append('data_string', dateString);
+        data.append('id_room', self.selRoom.id);
+    
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
-                // self.getArrayCalendar()
+                console.log(self.eventsMonth)
+                self.getArrayCalendar()
               }
             else{
               self.errors = response.data
@@ -172,6 +185,7 @@ export default {
     addEventsToCal: function(){
       var self = this
       var calendar = self.weeks
+      
       calendar.forEach(function(week) {
         week.forEach(function(day){
           if (day[0]){
@@ -241,6 +255,7 @@ export default {
         return numDay
       }
     },
+
     plusMonth: function(){
       var self = this
       self.currentMonth += 1
@@ -249,7 +264,7 @@ export default {
         self.currentMonth = 0
         self.currentYear += 1
       }
-      self.getEvents()
+      //self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
       self.getArrayCalendar()
       
     },
@@ -260,7 +275,7 @@ export default {
         self.currentMonth = 11
         self.currentYear -= 1
       }
-      self.getEvents()
+      //self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
       self.getArrayCalendar()
     },
     firstMonday: function(){
@@ -273,18 +288,7 @@ export default {
       self.weekDays = 'sun'
       self.getArrayCalendar()
     },
-    getRu: function(){
-      var self = this
-      self.nameMonth = 'ru'
-      self.weekDays = 'ru'
-      self.getArrayCalendar()
-    },
-    getEn: function(){
-      var self = this
-      self.nameMonth = 'en'
-      self.weekDays = 'sun'
-      self.getArrayCalendar()
-    },
+    
      logoutFun: function(){
       var self = this
       delete localStorage['user'] 
@@ -296,8 +300,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -333,17 +337,33 @@ export default {
         self.checkUser = ''
         return false
       }
-    },
+    }, 
+   
+
   },
  
     computed: {
-    getDays(){
-      var self = this
-      return self.weekDays
+   currYear() {
+      var self = this;
+      return self.inst_date.getFullYear();
     },
-    getMonth(){
-      var self = this
-      return self.nameMonth
+    currMonth() {
+      var self = this;
+      return self.inst_date.getMonth();
+    },
+    currWD() {
+      var self = this;
+      return self.inst_date.getDay();
+    },
+    currDay() {
+      var self = this;
+      const now = new Date();
+      if (
+        self.inst_date.getMonth() == now.getMonth() &&
+        self.inst_date.getFullYear() == now.getFullYear()
+      ) {
+        return now.getDate();
+      }
     },
     currentDay(){
       var self = this
@@ -362,10 +382,12 @@ export default {
   },
   created(){
     var self = this
+ 
     this.checkUserFun()
     this.getMonthYear()
     this.getRooms()
     this.getEvents()
+    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
     
      
   }
@@ -373,77 +395,66 @@ export default {
 </script>
 
 <style scoped>
+.main{
+ background:#EDEEF0;
+}
+.heads
+{
+  background: red;
+}
+.leftCursor
+{
+  padding-right: 20px;
+  cursor: pointer;
+}
+.rightCursor
+{
+  padding-left: 20px;
+   cursor: pointer;
+}
+.solo
+{
+  padding-right: 230px;
+}
 .shadow {
   padding: 0;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 .date{
-  background-color: #b1b1da;
+  background-color: pink;
   color: #b12d1f;
   font-weight: bold;
 }
-tbody{
-  background-color: white;
-}
+
 .title{
   text-align: center;
   color: darkblue;
   font-size: 17px;
   font-weight: bold;
-  background-color: #d9edf7;
+  background-color: #3CB371;
   padding-top: 10px;
+  width: 500px;
 }
-.title p{
-  width: 150px;
+table{
+  width: 1500px;
+}
+table tr{
+    background:#8FBC8F;
+}
+table th{
+    background: #3CB371;
+   
+}
+.title p{ 
   display: inline-table;
 }
-.title button{
-  background-color: #d9edf7;
-  border-color: #d9edf7;
-}
+
 .day{
   cursor: pointer;
   width: 122.61px;
   height: 118.33px;
 }
-td:hover{
-  background: #c7e3f1;
-}
-.ru-en-btn{
-  margin-bottom: 15px;
-}
-.mon-sun-btn{
-  margin-bottom: 15px;
-  width: 115px;
-}
-.right-top-menu{
-  height: 100px;
-}
-.btn-Book-Emp{
-  height: 300px;
-}
-.btn-Book-Emp button{
-  margin-top: 70px;
-  width: 115px;
-}
-.btnRoom{
-  border-radius: 0;
-}
-.selBtn{
-    color: red;
-}
-.rooms{
-  margin: 0;
-  background-color: #d9edf7;
-  text-align: center;
-}
-.roomSel{
-  margin: 0;
-  background-color: #d9edf7;
-  text-align: center;
-  color: darkblue;
-  font-size: 18px;
-}
+
 .events{
   text-align: center;
   color: black;
@@ -453,10 +464,7 @@ td:hover{
 .events button{
   padding: 0;
 }
-.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
-}
+
 .exit
 {
 float:right;
@@ -464,6 +472,13 @@ float:right;
 .link
 {
   font-size:15px;
+}
+.linkDiv
+{
+  
+  position: absolute;
+  left: 1600px;
+  top:210px;
 }
 
 
