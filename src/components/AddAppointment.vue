@@ -9,7 +9,6 @@
             <option :value="user.id" v-for="user in users">{{user.login}}</option>  
           </select>
         </div>
-        
         <div class="monthYearsSelects">
             <p>2. I would like to book this meeting:</p>
             <select  v-model="month" >
@@ -155,7 +154,6 @@ export default {
     
     }
   },
-  
   methods: {
      dateFixed(month=false){
       var actuallDate = new Date
@@ -172,8 +170,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -192,8 +190,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              // console.log(response)
                 if (self.user.hash === response.data[0].hash)
@@ -221,13 +219,11 @@ export default {
      
      getBoadRoomById: function(id){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
             .then(function (response) {
               if (response.status == 200) {
                   self.boardroom = response.data;
-                 
-                
               }
             else{
               self.errors = response.data
@@ -252,7 +248,7 @@ export default {
       var eventStart = new Date(self.yearsArr[self.year],self.month,self.days[self.day],self.timeStartHour,self.timeStartMin)
       var eventEnd = new Date(self.yearsArr[self.year],self.month,self.days[self.day],self.timeEndHour,self.timeEndMin)
       //var dayCreation = new Date(currentData.getFullYear(), currentData.getMonth(), currentData.getDate()).getTime() / 1000
-              console.log(self.desc)
+              //console.log(self.desc)
               var data = new URLSearchParams();
                 data.append('id_room', self.boardroom[0].id);
                 data.append('id_user', self.chooseUserId);
@@ -264,8 +260,8 @@ export default {
                 data.append('recurningType', self.recurringType);
                 data.append('id_parent', self.recurringDuration);
                 }
-                axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
-                 //axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
+                //axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+                 axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
                     .then(function (response) {
                      console.log(response)
                     if (response.data === 1)

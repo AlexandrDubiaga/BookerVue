@@ -11,63 +11,33 @@
             <p v-if="msg != ''" class="alert-info" style="text-align:center">{{msg}}</p>
             <table class="table table-bordered">
               <tbody>
-                <!-- 12-24 Format -->
-                <!--<tr v-if="timeFormat != 'am-pm'">
-                  <th>when:</th>
-                  <td v-if="access == '2'">
-                    <select v-model="selTimeH_Start">
-                      <option v-for="tH_s in timeH_S" :value="tH_s">{{tH_s}}</option>
-                    </select>
-                    <select v-model="selTimeM_Start">
-                      <option value="0">00</option>
-                      <option value="30">30</option>
-                    </select>
-                     - 
-                    <select v-model="selTimeH_End">
-                      <option v-for="tH_e in timeH_E" :value="tH_e">{{tH_e}}</option>
-                    </select>
-                    <select v-model="selTimeM_End">
-                      <option value="0">00</option>
-                      <option value="30">30</option>
-                    </select>
-                  </td>
-                  <td v-else>
-                   {{curentCreateTime}}
+                <tr>
+                  <th>1</th>
+                  <td>
+                    <select  v-model="StartHour">
+                <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
+              </select>
+              <select v-model="StartMinutes">
+                <option :value="StartMinutes * 15" v-for="StartMinutes in 4">{{StartMinutes * 15}}</option>
+              </select>
+              <!-- <select v-model="timeStartMidnight">
+                <option value="0">AM</option>
+                <option value="1">PM</option>
+              </select> -->
+              <select  v-model="EndHour">
+                <option :value="EndHour"  v-for="EndHour in 24">{{EndHour}}</option>
+              </select>
+              <select v-model="EndMinutes">
+                <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
+              </select>
+              <!-- <select v-model="timeEndMidnight">
+                <option value="0">AM</option>
+                <option value="1">PM</option>
+              </select> -->
+                    </td>
                   </td>
                 </tr>
-
-             
-                <tr v-else>
-                  <th>When:</th>
-                  <td v-if="access == '2'">
-                    <select v-model="selTimeH_Start">
-                      <option v-for="tAmPmS in timeAMPM_Start" :value="tAmPmS.val">{{tAmPmS.title}}</option>
-                    </select>
-                    <select v-model="selTimeM_Start">
-                      <option value="0">00</option>
-                      <option value="30">30</option>
-                    </select>
-                    <select v-model="selAmPmStart">
-                      <option value="am">AM</option>
-                      <option value="pm">PM</option>
-                    </select>
-                     - 
-                    <select v-model="selTimeH_End">
-                      <option v-for="tAmPmE in timeAMPM_End" :value="tAmPmE.val">{{tAmPmE.title}}</option>
-                    </select>
-                    <select v-model="selTimeM_End">
-                      <option value="0">00</option>
-                      <option value="30">30</option>
-                    </select>
-                    <select v-model="selAmPmEnd">
-                        <option value="am">AM</option>
-                        <option value="pm">PM</option>
-                    </select>
-                  </td>
-                  <td v-else>
-                   {{curentCreateTime}}
-                  </td>
-                </tr>-->
+               
                 <tr>
                   <th>notes:</th>
                   <td v-if="access == '2'">
@@ -126,13 +96,42 @@ export default {
       nameUserFromCurrentEvent:'',
       currentDescription:'',
       curentIdUserInCurrentEvent:'',
+      StartHour:'',
+      StartMinutes:'',
+      EndHour:'',
+      EndMinutes:'',
+      startDate:'',
+      endDate:'',
+      FullDateStart:''
+
     }
   },
   methods: {
     setProporties: function(){
       var self = this
       self.currentEvent = self.sentEvent
+
+      self.timeStart =  self.currentEvent.time_start
+      self.timeEnd =  self.currentEvent.time_end
+    
+      self.startDate = new Date(self.timeStart)
+      self.FullYear =  self.startDate.getFullYear()
+      self.Month =  self.startDate.getMonth()+1
+      self.Day =  self.startDate.getDay()+7
+      self.StartHour =   self.startDate.getHours();
+      self.StartMinutes =   self.startDate.getMinutes();
+     
+  
+      self.endDate = new Date(self.timeEnd)
+      self.FullYearEnd =  self.endDate.getFullYear()
+      self.MonthEnd =  self.endDate.getMonth()+1
+      self.DayEnd =  self.endDate.getDay()+7
+      self.EndHour =   self.endDate.getHours();
+      self.EndMinutes =   self.endDate.getMinutes();
+
+
       self.nameUserFromCurrentEvent = self.currentEvent.user_name
+      self.roomIdCurrentEvent = self.currentEvent.id_room
       self.vModelForDescription = self.currentEvent.description
       self.curentIdUserInCurrentEvent = self.currentEvent.id_user
       self.curentCreateTime = self.currentEvent.create_time
@@ -140,8 +139,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -159,8 +158,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
                 if (self.user.hash === response.data[0].hash)
                 {
@@ -195,7 +194,29 @@ export default {
     },
     updateEvent: function(){
             var self = this
-            //console.log(self.currenForUsersVmodel)
+              if(self.Month<10)
+              {
+                self.newMonth = '0'+self.Month
+              }
+              else{self.newMonth = self.Month}
+              if(self.StartHour<10)
+              {
+                self.newStartHours = '0'+self.StartHour
+              } else{self.newStartHours = self.StartHour}
+               if(self.MonthEnd<10)
+              {
+                self.newMonthEnd = '0'+self.MonthEnd
+              }else{ self.newMonthEnd = self.MonthEnd}
+              if(self.EndHour<10)
+              {
+                self.newEndHour = '0'+self.EndHour
+              }else{ self.newEndHour = self.EndHour}
+               self.roomIdCurrentEvent
+               self.vModelForDescription
+               self.FullDateStart = self.FullYear+'-'+self.newMonth+'-'+self.Day+' '+self.newStartHours+':'+self.StartMinutes+':'+'00'
+               self.FullDateEnd = self.FullYearEnd+'-'+self.newMonthEnd+'-'+self.DayEnd+' '+self.newEndHour+':'+self.EndMinutes+':'+'00'
+               var timeNow = (Date.now()/1000).toFixed()
+      
     }
   },
   

@@ -1,15 +1,19 @@
 <template>
   <div class="main container-fluid"  v-if="checkUser >0">
-         <modalwindow
+         <window
      v-if="showModal" 
       :sentEvent="sentEvent" 
       v-on:close="showModal = false">
-     </modalwindow>
+     </window>
 
      <div class="row">
       <p class="rooms">
-            <button v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
-             <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
+     
+            <button class="btn btn-default" v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
+           
+                 <router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link>
+           <router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link>  
+                <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
               <p><span class="">{{uservar}}</span></p>
             
           </p>
@@ -51,12 +55,11 @@
           </tr>
           </tbody>
         </table>
-         <div class="col-md-3 linkDiv">  
+         <!--<div class="col-md-3 linkDiv">  
         <div class="col-md-12 booker-but">
-          <td><router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link></td>
-           <td><router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link></td>    
+         
         </div>
-          </div>
+          </div>-->
 
       
     </div>
@@ -64,7 +67,7 @@
 </template>
 <script>
 import axios from "axios";
-import Modalwindow from './Modalwindow'
+import Modalwindow from './window'
 export default {
   name: "Calendar",
   data() {
@@ -110,8 +113,8 @@ export default {
     },
     getRooms: function(){
       var self = this
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -124,8 +127,8 @@ export default {
    
       var self = this
     
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -150,8 +153,8 @@ export default {
         data.append('data_string', dateString);
         data.append('id_room', self.selRoom.id);
     
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -312,8 +315,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -403,7 +406,7 @@ export default {
      
   },
     components: {
-      'Modalwindow': Modalwindow
+      'window': Modalwindow
   }
 };
 </script>
@@ -479,10 +482,7 @@ table th{
   padding: 0;
 }
 
-.exit
-{
-float:right;
-}
+
 .link
 {
   font-size:15px;
