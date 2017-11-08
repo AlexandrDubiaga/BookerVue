@@ -1,10 +1,17 @@
 <template>
   <div class="main container-fluid"  v-if="checkUser >0">
+         <modalwindow
+     v-if="showModal" 
+      :sentEvent="sentEvent" 
+      v-on:close="showModal = false">
+     </modalwindow>
+
      <div class="row">
       <p class="rooms">
             <button v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
              <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
               <p><span class="">{{uservar}}</span></p>
+            
           </p>
           <p class="roomSel">
             Room is: <strong>{{selRoom.name}}</strong>
@@ -57,6 +64,7 @@
 </template>
 <script>
 import axios from "axios";
+import Modalwindow from './Modalwindow'
 export default {
   name: "Calendar",
   data() {
@@ -87,7 +95,10 @@ export default {
       currentYear: '',
       rooms: [],
       eventsMonth: [],
-      sentEvent: {}
+      sentEvent: {},
+         showModal: false
+  
+
     };
   },
    methods: {
@@ -95,6 +106,7 @@ export default {
       var self = this
       self.showModal = true
       self.sentEvent = event
+      
     },
     getRooms: function(){
       var self = this
@@ -378,8 +390,7 @@ export default {
     },
      
   },
-  components: {
-  },
+
   created(){
     var self = this
  
@@ -390,6 +401,9 @@ export default {
     this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
     
      
+  },
+    components: {
+      'Modalwindow': Modalwindow
   }
 };
 </script>
