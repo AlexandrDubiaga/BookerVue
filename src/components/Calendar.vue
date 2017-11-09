@@ -113,8 +113,8 @@ export default {
     },
     getRooms: function(){
       var self = this
-      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -127,8 +127,8 @@ export default {
    
       var self = this
     
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -153,8 +153,8 @@ export default {
         data.append('data_string', dateString);
         data.append('id_room', self.selRoom.id);
     
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -315,8 +315,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
