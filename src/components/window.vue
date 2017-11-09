@@ -8,8 +8,8 @@
           <button type="button" v-on:click="$emit('close')">close</button>
           </div>
             <h6>B.B. DETAILS</h6>
-            <p v-if="errorMsg != ''" class="alert-danger" style="text-align: center;" >{{error}}</p>
-                  <p class="alert-danger" style="text-align: center;" >{{success}}</p>
+            <p v-if="success != ''" class="alert-danger" style="text-align: center;" >{{success}}</p>
+              
             <p v-if="msg != ''" class="alert-info" style="text-align:center">{{msg}}</p>
             <table class="table table-bordered">
               <tbody>
@@ -98,6 +98,7 @@ export default {
       nameUserFromCurrentEvent:'',
       currentDescription:'',
       curentIdUserInCurrentEvent:'',
+      curentCreateTime:'',
       StartHour:'',
       StartMinutes:'',
       EndHour:'',
@@ -152,8 +153,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -171,14 +172,14 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
                 if (self.user.hash === response.data[0].hash)
                 {
                     self.role = response.data[0].role
                     self.checkUserRole()
-                    console.log(self.access)
+                    //console.log(self.access)
                     self.setProporties()
                       
                      
@@ -208,11 +209,11 @@ export default {
     },
     updateEvent: function(){
            var self = this
-      self.error = ''
+        self.error = ''
         var data = {}
         self.timeStart = self.yearStart + '-' + self.monthStart + '-' +self.dateStart  + ' ' + self.StartHour + ':' + self.StartMinutes + ':' + '00' ;
         self.timeEnd = self.yearEnd + '-' + self.monthEnd + '-' +self.dateEnd  + ' ' + self.EndHour + ':' + self.EndMinutes + ':' + '00' ;
-        data.cur_id =  self.currentEventId 
+        data.id =  self.currentEventId 
         data.id = self.currentEventId
         data.id_user = self.currenForUsersVmodel;
         data.id_room = self.roomIdCurrentEvent
@@ -220,119 +221,22 @@ export default {
         data.time_start =  self.timeStart 
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
-          axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+          //axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+           axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
           .then(function(response){
-            console.log(response.data)
-            if (response.data == 1 || response.data == true)
-            {
-              console.log(response)
-              self.error = 'Event update!'
-              self.success = 'success'
+            if (response)
+            {  
+          
+              self.success = 'Update success'
               self.$emit('refresh')
             }
-            else  self.error = 'Error update!'
+            else {
+              self.error = 'Error update!'
+              console.log('alex')
+            } 
           })
-          }
-   
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-       
-            // if(self.Day<10)
-            // {
-            //     self.newDayStart = '0'+self.Day
-            // }else{ self.newDayStart = self.Day}
-            //  if(self.DayEnd<10)
-            // {
-            //     self.newDayEnd = '0'+self.DayEnd
-            // }else{ self.newDayEnd = self.DayEnd}
-            //   if(self.Month<10)
-            //   {
-            //     self.newMonth = '0'+self.Month
-            //   }
-            //   else{self.newMonth = self.Month}
-            //   if(self.StartHour<10)
-            //   {
-            //     self.newStartHours = '0'+self.StartHour
-            //   } else{self.newStartHours = self.StartHour}
-            //    if(self.MonthEnd<10)
-            //   {
-            //     self.newMonthEnd = '0'+self.MonthEnd
-            //   }else{ self.newMonthEnd = self.MonthEnd}
-            //   if(self.EndHour<10)
-            //   {
-            //     self.newEndHour = '0'+self.EndHour
-            //   }else{ self.newEndHour = self.EndHour}
-
-            
-            //    self.roomIdCurrentEvent
-            //    self.vModelForDescription
-            //    self.FullDateStart = self.FullYear+'-'+self.newMonth+'-'+self.newDayStart+' '+self.newStartHours+':'+self.StartMinutes+':'+'00'
-            //    self.FullDateEnd = self.FullYearEnd+'-'+self.newMonthEnd+'-'+self.newDayEnd+' '+self.newEndHour+':'+self.EndMinutes+':'+'00'
-            //    var timeNow = (Date.now()/1000).toFixed()
-
-            //     //var data = {'id_event':self.currentEventId,'id_user':self.currenForUsersVmodel,'id_room':self.roomIdCurrentEvent,'description':self.vModelForDescription,'time_start':self.FullDateStart,'time_end':self.FullDateEnd,'create_time':timeNow}
-            //    var data = new URLSearchParams();
-            //    data.append('id_event', self.currentEventId)
-            //    data.append('id_user', self.currenForUsersVmodel)
-            //    data.append('id_room', self.roomIdCurrentEvent);
-            //    data.append('description', self.vModelForDescription);
-            //    data.append('time_start', self.FullDateStart);
-            //    data.append('time_end', self.FullDateEnd);
-            //    data.append('create_time', timeNow);
-            //   console.log('Event id :'+self.currentEventId)
-            //    console.log('idUser  :'+self.currenForUsersVmodel)
-            //     console.log('room id :'+self.roomIdCurrentEvent)
-            //      console.log('desc :'+self.vModelForDescription)
-            //       console.log('start  :'+self.FullDateStart)
-            //        console.log('end  :'+self.FullDateEnd)
-            //         console.log('time now  :'+timeNow)
-      
-            //       axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data)
-            //         .then(function (response) {
-            //            if (response.data === 1)
-            //         {
-            //          self.FullDateStart = self.Day
-            //             self.success = 'Event update'
-            //            //console.log( self.success)
-            //         }
-            //         else
-            //         {
-            //            console.log( response)
-            //         }
-                   
-            //     })
-            //         .catch(function (error) {
-            //         console.log(error)
-            //     })
-    
-      
-    
   },
   
   created(){

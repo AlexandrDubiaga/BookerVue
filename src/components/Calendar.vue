@@ -73,6 +73,7 @@ export default {
   data() {
   
     return {
+      id:'',
       uservar:'',
       checkUser: 0,
       dataInCalendar:'',
@@ -111,10 +112,11 @@ export default {
       self.sentEvent = event
       
     },
+      
     getRooms: function(){
       var self = this
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -127,8 +129,8 @@ export default {
    
       var self = this
     
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
@@ -145,7 +147,7 @@ export default {
     getAppointmentByIdUserBoardroomId: function(index){
    
       var self = this
-      self.selRoom = self.rooms[index]
+       self.selRoom = self.rooms[index]
         var year = self.currentYear
       var month = self.currentMonth+1
       var dateString = year + '-' + month 
@@ -153,12 +155,12 @@ export default {
         data.append('data_string', dateString);
         data.append('id_room', self.selRoom.id);
     
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + self.selRoom.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + data)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
             .then(function (response) {
               if (response.status == 200) {
                 self.eventsMonth = response.data;  
-                console.log(self.eventsMonth)
+              
                 self.getArrayCalendar()
               }
             else{
@@ -185,8 +187,11 @@ export default {
         self.weeks[0].push([])
       }
       var count = 0
+    
+
       while (date.getMonth() == self.currentMonth)
       {
+       
         self.weeks[count].push([date.getDate()])
         if (self.getNumDay(date) % 7 == 6)
         {
@@ -195,17 +200,19 @@ export default {
         }
         date.setDate(date.getDate()+1)
       }
+      //console.log()
       self.addEventsToCal()
     },
     addEventsToCal: function(){
       var self = this
       var calendar = self.weeks
-      
       calendar.forEach(function(week) {
         week.forEach(function(day){
           if (day[0]){
+           
             self.eventsMonth.forEach(function(event)
             {
+              //console.log(event.id_room)
               if (event.id_room == self.selRoom.id)
               {
               var dateEvStart = new Date(event.time_start)
@@ -315,8 +322,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
@@ -396,12 +403,12 @@ export default {
 
   created(){
     var self = this
- 
     this.checkUserFun()
     this.getMonthYear()
     this.getRooms()
     this.getEvents()
     this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+  
     
      
   },
