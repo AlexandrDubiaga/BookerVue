@@ -170,8 +170,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+         // axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -190,8 +190,8 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-      //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              // console.log(response)
                 if (self.user.hash === response.data[0].hash)
@@ -219,8 +219,8 @@ export default {
      
      getBoadRoomById: function(id){
       var self = this
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/' + id)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/'+ id)
             .then(function (response) {
               if (response.status == 200) {
                   self.boardroom = response.data;
@@ -260,8 +260,8 @@ export default {
                 data.append('recurningType', self.recurringType);
                 data.append('id_parent', self.recurringDuration);
                 }
-                //axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
-                 axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
+                axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+                 //axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
                     .then(function (response) {
                      console.log(response)
                     if (response.data === 1)

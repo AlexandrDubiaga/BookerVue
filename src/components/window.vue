@@ -9,14 +9,14 @@
           </div>
             <h6>B.B. DETAILS</h6>
             <p v-if="success != ''" class="alert-danger" style="text-align: center;" >{{success}}</p>
-              
-            <p v-if="msg != ''" class="alert-info" style="text-align:center">{{msg}}</p>
             <table class="table table-bordered">
               <tbody>
                 <tr>
-                  <th>1</th>
-                  <td>
-                    <select  v-model="StartHour">
+                  <th v-if="access == '2'">Time</th>
+                    <th v-else-if="(access == '1' && user.id == currentEventIdUser)">Time</th>
+                  <th v-else>Time</th>
+                  <td v-if="access == '2'">
+                <select  v-model="StartHour">
                 <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
               </select>
               <select v-model="StartMinutes">
@@ -32,31 +32,45 @@
               <select v-model="EndMinutes">
                 <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
               </select>
-              <!-- <select v-model="timeEndMidnight">
-                <option value="0">AM</option>
-                <option value="1">PM</option>
-              </select> -->
                     </td>
-                 
-                </tr>
-               
+                      <td v-else-if="access == '1' && user.id == currentEventIdUser">
+                          <select  v-model="StartHour">
+                <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
+              </select>
+              <select v-model="StartMinutes">
+                <option :value="StartMinutes * 15" v-for="StartMinutes in 4">{{StartMinutes * 15}}</option>
+              </select>
+              <select  v-model="EndHour">
+                <option :value="EndHour"  v-for="EndHour in 24">{{EndHour}}</option>
+              </select>
+              <select v-model="EndMinutes">
+                <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
+              </select>
+              </td>
+              <td v-else>{{timeStart}}</td>
                 <tr>
                   <th>notes:</th>
                   <td v-if="access == '2'">
+                    <input type="text" v-model="vModelForDescription" :value="currentEvent.description">
+                  </td>
+                   <td v-else-if="access == '1'">
                     <input type="text" v-model="vModelForDescription" :value="currentEvent.description">
                   </td>
                   <td v-else>{{currentEvent.description}}</td>
                 </tr>
                 <tr>
                   <th>who:</th>
-                  <td v-if="nameUserFromCurrentEvent && access == '2' && success != 'success'">
+                  <td v-if="access == '2'">
                     <select class="selUser" v-model="currenForUsersVmodel">
                         <option v-for="user in users" :value="user.id">{{user.login}}</option>
                     </select>
                   </td>
-                  <td v-else-if="nameUserFromCurrentEvent && access == '1' && success != 'success'">{{nameUserFromCurrentEvent}}</td>
-                  <td v-else-if="!nameUserFromCurrentEvent" class="alert-danger">No-access</td>
-                  <td v-else>{{nameUserFromCurrentEvent}}</td>
+                  <td v-if="access == '1'">
+                    <select class="selUser" v-model="currenForUsersVmodel">
+                        <option v-for="user in users" :value="user.id">{{user.login}}</option>
+                    </select>
+                  </td>
+                  <td v-else>Only for admin</td>
                 </tr>
                 <tr>
                   <td colspan="2">Submitted: {{curentCreateTime}}</td>
@@ -68,9 +82,13 @@
               <label for="checkbox">Apply to all occurrences?</label>
           </div> -->
           <div v-if="success != 'success'">
-          <div v-if="access == '2' || user.id== curentIdUserInCurrentEvent" class="btn-section">
+          <div v-if="access == '2'">
             <button  v-on:click="updateEvent()">Update</button>
-            <button v-on:click="deleteEvent()">Delete</button>
+            <button v-on:click="deleteEvent(currentEventId)">Delete</button>
+          </div>
+          <div v-if="access == '1'">
+            <button  v-on:click="updateEvent()">Update</button>
+            <button v-on:click="deleteEvent(currentEventId)">Delete</button>
           </div>
           </div>
           <div v-else style="text-align:center">
@@ -89,6 +107,7 @@ export default {
   data () {
     return {
       msg: '',
+      role:'',
       errorMsg: '',
       success: '',
       access: '',
@@ -118,9 +137,9 @@ export default {
     setProporties: function(){
       var self = this
       self.currentEvent = self.sentEvent
-      
+      console.log(self.currentEvent)
       self.currentEventId = self.currentEvent.id
-      self.nameUserFromCurrentEvent = self.currentEvent.user_name
+      self.currentEventIdUser = self.currentEvent.id_user
       self.roomIdCurrentEvent = self.currentEvent.id_room
       self.vModelForDescription = self.currentEvent.description
       self.curentIdUserInCurrentEvent = self.user.id
@@ -153,8 +172,8 @@ export default {
     },
       getAllUsers: function(){
       var self = this
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
                   self.users = response.data;
@@ -172,14 +191,14 @@ export default {
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
                 if (self.user.hash === response.data[0].hash)
                 {
                     self.role = response.data[0].role
                     self.checkUserRole()
-                    //console.log(self.access)
+                    console.log(self.access)
                     self.setProporties()
                       
                      
@@ -214,15 +233,17 @@ export default {
         self.timeStart = self.yearStart + '-' + self.monthStart + '-' +self.dateStart  + ' ' + self.StartHour + ':' + self.StartMinutes + ':' + '00' ;
         self.timeEnd = self.yearEnd + '-' + self.monthEnd + '-' +self.dateEnd  + ' ' + self.EndHour + ':' + self.EndMinutes + ':' + '00' ;
         data.id =  self.currentEventId 
-        data.id = self.currentEventId
         data.id_user = self.currenForUsersVmodel;
         data.id_room = self.roomIdCurrentEvent
         data.description = self.vModelForDescription
         data.time_start =  self.timeStart 
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
-          //axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
-           axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
+          console.log(  self.user.id )
+           console.log(  self.currentEventIdUser )
+      
+          /*axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+           //axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
           .then(function(response){
             if (response)
             {  
@@ -234,8 +255,25 @@ export default {
               self.error = 'Error update!'
               console.log('alex')
             } 
-          })
-    }
+          })*/
+    },
+       deleteEvent: function($id){
+      var self = this
+     axios.delete('http://BoardroomBooker/user2/Booker/client/api/events/' + $id)
+     //axios.delete('http://192.168.0.15/~user2/Booker/client/api/events/' + $id)
+            .then(function (response) {
+              if (response.data)
+                    {
+                     
+                        self.success = 'Event deleted'
+                        //console.log( self.success)
+                    }
+                    else
+                    {
+                        self.errorMsg = 'error'
+                    }            
+        })
+    },
 
   },
   
@@ -246,30 +284,7 @@ export default {
   
   },
  computed: {
-    hoursSelector(){
-      var self = this
-        var hours = []
-          for(var i=8;i<=20;i++){
-            hours.push({value:i, title:i})
-        }
-        return hours
-    },
-      hoursStSelector(){
-      var self = this
-        var hours = []
-          for(var i=8;i<=19;i++){
-            hours.push({value:i, title:i})
-        }
-        return hours
-    },
-    minutesSelector(){
-      var self = this
-      var minutes = []
-      self.minutes.forEach(function(m){
-        minutes.push({value:m, title:m})
-      })
-      return minutes
-    }
+   
   }
 }
 </script>

@@ -32,7 +32,7 @@
       </div>
       <div class="title">
           <p class="leftCursor" v-on:click="minusMonth()">«</p>
-          <p>{{months[currentMonth]}} {{currentYear}}</p>
+          <p>{{getMonth[currentMonth]}} {{currentYear}}</p>
            <p class="rightCursor" v-on:click="plusMonth()">»</p>
         </div>
         
@@ -41,7 +41,7 @@
         <table class="table table-bordered">
           <thead>
           <tr class="heads">
-            <th v-for="wday in daysSun">{{wday}}</th>
+            <th v-for="wday in getDays">{{wday}}</th>
           </tr>
          
           </thead>
@@ -55,13 +55,7 @@
           </tr>
           </tbody>
         </table>
-         <!--<div class="col-md-3 linkDiv">  
-        <div class="col-md-12 booker-but">
-         
-        </div>
-          </div>-->
 
-      
     </div>
   </div>
 </template>
@@ -83,9 +77,7 @@ export default {
       counter: 2,
       typeC:'',
       inst_date: new Date(),
-      daysSun: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      daysMon: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+     
       config: {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -101,8 +93,8 @@ export default {
       eventsMonth: [],
       sentEvent: {},
          showModal: false
+         
   
-
     };
   },
    methods: {
@@ -115,8 +107,8 @@ export default {
       
     getRooms: function(){
       var self = this
-      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
             self.selRoom = self.rooms[0]
@@ -125,51 +117,25 @@ export default {
         console.log(error)
       })
     },
-    getEvents: function(){
-   
-      var self = this
-    
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/')
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
-            .then(function (response) {
-              if (response.status == 200) {
-                self.eventsMonth = response.data;  
-                 self.getArrayCalendar()
-              }
-            else{
-              self.errors = response.data
-            }
-        })
-        .catch(function (error) {
-          console.log(error)
-        });
-      },
     getAppointmentByIdUserBoardroomId: function(index){
-   
       var self = this
        self.selRoom = self.rooms[index]
-        var year = self.currentYear
+          var self = this
+      self.eventsMonth = []
+      self.errorMsg = ''
+      var year = self.currentYear
       var month = self.currentMonth+1
       var dateString = year + '-' + month 
-        var data = new URLSearchParams();
-        data.append('data_string', dateString);
-        data.append('id_room', self.selRoom.id);
-    
-          axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' + data)
-          //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/'+ data)
-            .then(function (response) {
-              if (response.status == 200) {
-                self.eventsMonth = response.data;  
-              
-                self.getArrayCalendar()
-              }
-            else{
-              self.errors = response.data
-            }
-        })
-        .catch(function (error) {
-          console.log(error)
-        });
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' )
+          .then(function (response) {
+            self.eventsMonth = response.data
+            
+            self.getArrayCalendar()
+         
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
       },
        getMonthYear: function()
     {
@@ -188,7 +154,6 @@ export default {
       }
       var count = 0
     
-
       while (date.getMonth() == self.currentMonth)
       {
        
@@ -200,7 +165,6 @@ export default {
         }
         date.setDate(date.getDate()+1)
       }
-      //console.log()
       self.addEventsToCal()
     },
     addEventsToCal: function(){
@@ -209,10 +173,10 @@ export default {
       calendar.forEach(function(week) {
         week.forEach(function(day){
           if (day[0]){
-           
             self.eventsMonth.forEach(function(event)
             {
-              //console.log(event.id_room)
+              var x = new Date(event.time_start)
+            if(x.getMonth() == self.currentMonth){
               if (event.id_room == self.selRoom.id)
               {
               var dateEvStart = new Date(event.time_start)
@@ -248,6 +212,7 @@ export default {
                   }
               }
               }
+            }
             })
           }
         })
@@ -277,7 +242,6 @@ export default {
         return numDay
       }
     },
-
     plusMonth: function(){
       var self = this
       self.currentMonth += 1
@@ -319,20 +283,23 @@ export default {
     },
      checkUserFun: function(){
       var self = this
+      
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
              
                 if (self.user.hash === response.data[0].hash)
                 {
                   if(response.data[0].role == "admin")
                   {
+                    
                     self.checkUser = 2;
                     self.role = response.data[0].role
                     self.uservar = "Hello,"+ response.data[0].login
+
                
                     return true
                   }
@@ -359,33 +326,42 @@ export default {
         self.checkUser = ''
         return false
       }
-    }, 
-   
-
-  },
- 
-    computed: {
-   currYear() {
-      var self = this;
-      return self.inst_date.getFullYear();
     },
-    currMonth() {
-      var self = this;
-      return self.inst_date.getMonth();
+    getNameMonth:function(str){
+    if (str == 'en')
+    {
+        return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+         'October', 'November', 'December']
+    }
+    else if (str == 'ru')
+    {
+        return ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь',
+        'Октябрь', 'Ноябрь', 'Декабрь']
+    }
+},
+getWeekDays:function(str){
+    if (str == 'sun')
+    {
+        return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    }
+    else if (str == 'mon')
+    {
+        return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    }
+    else if (str == 'ru')
+    {
+        return ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+    }
+}
+   },
+   computed: {
+    getDays(){
+      var self = this
+      return self.getWeekDays('sun')
     },
-    currWD() {
-      var self = this;
-      return self.inst_date.getDay();
-    },
-    currDay() {
-      var self = this;
-      const now = new Date();
-      if (
-        self.inst_date.getMonth() == now.getMonth() &&
-        self.inst_date.getFullYear() == now.getFullYear()
-      ) {
-        return now.getDate();
-      }
+    getMonth(){
+      var self = this
+      return self.getNameMonth('en')
     },
     currentDay(){
       var self = this
@@ -397,20 +373,16 @@ export default {
       {
         return false
       }
-    },
-     
-  },
+    }
+   }, 
 
   created(){
     var self = this
     this.checkUserFun()
     this.getMonthYear()
     this.getRooms()
-    this.getEvents()
-    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)
-  
-    
-     
+ 
+    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)  
   },
     components: {
       'window': Modalwindow
@@ -449,7 +421,6 @@ export default {
   color: #b12d1f;
   font-weight: bold;
 }
-
 .title{
   text-align: center;
   color: darkblue;
@@ -472,13 +443,11 @@ table th{
 .title p{ 
   display: inline-table;
 }
-
 .day{
   cursor: pointer;
   width: 122.61px;
   height: 118.33px;
 }
-
 .events{
   text-align: center;
   color: black;
@@ -488,8 +457,6 @@ table th{
 .events button{
   padding: 0;
 }
-
-
 .link
 {
   font-size:15px;
@@ -501,8 +468,4 @@ table th{
   left: 1600px;
   top:210px;
 }
-
-
-
-
 </style>

@@ -5,6 +5,11 @@ import App from './App'
 import router from './router'
 
 Vue.config.productionTip = false
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+Vue.use(VueAxios, axios)
+
 
 /* eslint-disable no-new */
 new Vue({
