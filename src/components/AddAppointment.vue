@@ -3,10 +3,17 @@
    <div v-if="success !== ''" class="alert alert-danger">
                 {{ success }}
             </div>
-        <div>
-          <p v-for="s in boardroom">1. Booked for:  {{s.name}}</p>
+            <div>
+                    <p v-for="s in boardroom">1. Booked for:  {{s.name}}</p>
+            </div>
+        <div v-if="role=='admin'">
           <select class="firstSelect"   v-model="chooseUserId" >
             <option :value="user.id" v-for="user in users">{{user.login}}</option>  
+          </select>
+        </div>
+         <div v-else-if="role=='user'">
+          <select class="firstSelect"  v-model="chooseUserId">
+            <option  :value="one.id" v-for="one in OneUser">{{one.login}}</option>  
           </select>
         </div>
         <div class="monthYearsSelects">
@@ -105,13 +112,14 @@ export default {
   
   data () {
     return {
+      user:[],
       success:'',
     checkUser:0,
     room:'',
     role:'',
     boardroom:'',
     users:[],
-    chooseUserId:'1',
+   
     yearsArr: ['2017','2018','2019'],
     monthArr: [
       "January", 
@@ -128,6 +136,7 @@ export default {
       "December"
     ],
     days:[],
+    OneUser:[],
     month:0,
     year:0,
     day:0,
@@ -174,8 +183,26 @@ export default {
           axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
-                  self.users = response.data;
-                
+                  self.users = response.data; 
+                   self.chooseUserId =  self.users[0].id
+              }
+            else{
+              self.errors = response.data
+            }
+        })
+        .catch(function (error) {
+          console.log(error)
+        });
+      },
+        getOneUser: function($id){
+      var self = this
+         // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/',  + $id,  self.config)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + $id, self.config)
+            .then(function (response) {
+              //console.log(response)
+              if (response.status == 200) {
+                  self.OneUser = response.data;    
+                  self.chooseUserId =  self.OneUser[0].id
               }
             else{
               self.errors = response.data
@@ -187,6 +214,7 @@ export default {
       },
      checkUserFun: function(){
       var self = this
+   
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
@@ -196,9 +224,11 @@ export default {
              // console.log(response)
                 if (self.user.hash === response.data[0].hash)
                 {
-                      
+                   
                     self.checkUser = 1;
                     self.role = response.data[0].role
+                
+                  
                     return true
                 }
                 else
@@ -260,6 +290,7 @@ export default {
                 data.append('recurningType', self.recurringType);
                 data.append('id_parent', self.recurringDuration);
                 }
+                console.log(self.chooseUserId)
                 axios.post('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
                  //axios.post('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
                     .then(function (response) {
@@ -282,9 +313,12 @@ export default {
   
  
 created(){
+  var self = this
    this.checkUserFun()
    this.getBoadRoomById(this.$route.params.id)
    this.getAllUsers()
+    this.getOneUser(self.user.id)
+   
 
 
      
@@ -296,7 +330,8 @@ created(){
 <style scoped>
 .main
 {
-  background:#EDEEF0;
+  background-image: url('/static/img/userList.jpg');
+  background-attachment: fixed;
 }
 .firstSelect{
   border:2px solid #507299;

@@ -33,7 +33,7 @@
                 <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
               </select>
                     </td>
-                      <td v-else-if="access == '1' && user.id == currentEventIdUser">
+                      <td v-else-if="(access == '1' && user.id == currentEventIdUser)">
                           <select  v-model="StartHour">
                 <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
               </select>
@@ -53,7 +53,7 @@
                   <td v-if="access == '2'">
                     <input type="text" v-model="vModelForDescription" :value="currentEvent.description">
                   </td>
-                   <td v-else-if="access == '1'">
+                   <td v-else-if="(access == '1' && user.id == currentEventIdUser)">
                     <input type="text" v-model="vModelForDescription" :value="currentEvent.description">
                   </td>
                   <td v-else>{{currentEvent.description}}</td>
@@ -62,15 +62,15 @@
                   <th>who:</th>
                   <td v-if="access == '2'">
                     <select class="selUser" v-model="currenForUsersVmodel">
-                        <option v-for="user in users" :value="user.id">{{user.login}}</option>
+                        <option v-for="userRole in rolesArray" :value="userRole.id" >{{userRole.login}}</option>
                     </select>
                   </td>
-                  <td v-if="access == '1'">
+                  <!-- <td v-if="(access == '1' && user.id == currentEventIdUser)">
                     <select class="selUser" v-model="currenForUsersVmodel">
-                        <option v-for="user in users" :value="user.id">{{user.login}}</option>
+                        <option v-for="userRole in rolesArray" :value="userRole.id">{{userRole.login}}</option>
                     </select>
-                  </td>
-                  <td v-else>Only for admin</td>
+                  </td> -->
+                  <td v-else-if="(access == '1')">Only for admin</td>
                 </tr>
                 <tr>
                   <td colspan="2">Submitted: {{curentCreateTime}}</td>
@@ -86,7 +86,7 @@
             <button  v-on:click="updateEvent()">Update</button>
             <button v-on:click="deleteEvent(currentEventId)">Delete</button>
           </div>
-          <div v-if="access == '1'">
+          <div v-if="(access == '1' && user.id == currentEventIdUser)">
             <button  v-on:click="updateEvent()">Update</button>
             <button v-on:click="deleteEvent(currentEventId)">Delete</button>
           </div>
@@ -113,7 +113,7 @@ export default {
       access: '',
       currentEvent: {},
       user: {},
-      users:[],
+      rolesArray:[],
       nameUserFromCurrentEvent:'',
       currentDescription:'',
       curentIdUserInCurrentEvent:'',
@@ -137,14 +137,14 @@ export default {
     setProporties: function(){
       var self = this
       self.currentEvent = self.sentEvent
-      console.log(self.currentEvent)
+      //console.log(self.currentEvent)
       self.currentEventId = self.currentEvent.id
       self.currentEventIdUser = self.currentEvent.id_user
       self.roomIdCurrentEvent = self.currentEvent.id_room
       self.vModelForDescription = self.currentEvent.description
-      self.curentIdUserInCurrentEvent = self.user.id
+      self.curentIdUserInCurrentEvent = self.rolesArray.id
       self.curentCreateTime = self.currentEvent.create_time
-      self.currenForUsersVmodel = self.curentIdUserInCurrentEvent  
+      self.currenForUsersVmodel = 1
 
       self.timeStart =  self.currentEvent.time_start
       self.timeEnd =  self.currentEvent.time_end
@@ -165,10 +165,6 @@ export default {
       self.dateEnd =  self.endTime.getDate();
       self.EndHour = self.endTime.getHours();
       self.EndMinutes =  self.endTime.getMinutes();
- 
- 
-    
-
     },
       getAllUsers: function(){
       var self = this
@@ -176,7 +172,8 @@ export default {
           axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
             .then(function (response) {
               if (response.status == 200) {
-                  self.users = response.data;
+                  self.rolesArray = response.data;
+                 
               }
             else{
               self.errors = response.data
@@ -198,7 +195,6 @@ export default {
                 {
                     self.role = response.data[0].role
                     self.checkUserRole()
-                    console.log(self.access)
                     self.setProporties()
                       
                      
@@ -239,10 +235,10 @@ export default {
         data.time_start =  self.timeStart 
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
-          console.log(  self.user.id )
-           console.log(  self.currentEventIdUser )
       
-          /*axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+           //console.log(  self.currenForUsersVmodel )
+      
+          axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
            //axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
           .then(function(response){
             if (response)
@@ -253,9 +249,8 @@ export default {
             }
             else {
               self.error = 'Error update!'
-              console.log('alex')
             } 
-          })*/
+          })
     },
        deleteEvent: function($id){
       var self = this

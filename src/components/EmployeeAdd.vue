@@ -14,6 +14,7 @@
              <th>Email Employee</th>
              <th>Edit Employee</th>
              <th>Remove Employee</th>
+             <th>Mail to</th>
            </tr>
          </thead>
          <tbody>
@@ -23,10 +24,12 @@
                 </div></td>
              <td><div class="col-sm-10">
                     <input v-model="employee.email" :value="employee.email" type="text" class="form-control" id="email" name="email">
-                </div></td>
+                </div>
+              </td>
              <td><button class="btn btn-outline-primary" v-on:click="saveDataUsers(index)">Edit</button></td>
              <td><button class="btn btn-outline-primary" v-on:click="deleteEmployeeById(employee.id)">Remove</button></td>
-           </tr>
+             <td><button class="btn btn-outline-primary"><a :href="'mailto:'+employee.email">{{employee.login}}</a></button></td>
+          </tr>
          </tbody>
        </table>
       
@@ -164,12 +167,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.control-group,controls
+{
+   background-image: url('/static/img/edituser.jpg');
+   background-attachment: fixed;
+
+}
+
 .author{
   text-align: center;
 }
 .table{
   width: 700px;
   margin: auto;
+  
 }
 .table tr th{
   text-align: center;

@@ -131,6 +131,11 @@ export default {
     position:absolute;
     top:10px;
 }
+.regForm
+{
+       background-image: url('/static/img/edituser.jpg');
+   background-attachment: fixed;
+}
 input
 {
     height:30px;

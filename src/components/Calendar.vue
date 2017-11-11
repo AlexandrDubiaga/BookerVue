@@ -73,7 +73,10 @@ export default {
       dataInCalendar:'',
       rooms: [],
       timeData:{},
-      selRoom: {},
+      selRoom: {
+        id: '1',
+        name: ''
+      },
       counter: 2,
       typeC:'',
       inst_date: new Date(),
@@ -111,7 +114,8 @@ export default {
       //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
           .then(function (response) {
             self.rooms = response.data
-            self.selRoom = self.rooms[0]
+                   self.selRoom = self.rooms[0]  
+           
       })
       .catch(function (error) {
         console.log(error)
@@ -119,17 +123,25 @@ export default {
     },
     getAppointmentByIdUserBoardroomId: function(index){
       var self = this
-       self.selRoom = self.rooms[index]
-          var self = this
-      self.eventsMonth = []
-      self.errorMsg = ''
-      var year = self.currentYear
-      var month = self.currentMonth+1
-      var dateString = year + '-' + month 
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' )
+      self.selRoom = self.rooms[index]
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events'+  self.selRoom.id)
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' +  self.selRoom.id )
           .then(function (response) {
             self.eventsMonth = response.data
             
+            self.getArrayCalendar()
+         
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+      },
+      getAllEvents: function(){
+      var self = this
+       //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events')
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
+          .then(function (response) {
+            self.eventsMonth = response.data
             self.getArrayCalendar()
          
       })
@@ -250,8 +262,8 @@ export default {
         self.currentMonth = 0
         self.currentYear += 1
       }
-      //self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
-      self.getArrayCalendar()
+     //self.getAllEvents()
+     self.getArrayCalendar()
       
     },
     minusMonth: function(){
@@ -261,7 +273,7 @@ export default {
         self.currentMonth = 11
         self.currentYear -= 1
       }
-      //self.getAppointmentByIdUserBoardroomId(self.selRoom.id)
+      self.getAllEvents()
       self.getArrayCalendar()
     },
     firstMonday: function(){
@@ -379,9 +391,10 @@ getWeekDays:function(str){
   created(){
     var self = this
     this.checkUserFun()
+    this.getAllEvents()
     this.getMonthYear()
     this.getRooms()
- 
+       self.selRoom.id =1;
     this.getAppointmentByIdUserBoardroomId(self.selRoom.id)  
   },
     components: {
@@ -392,7 +405,10 @@ getWeekDays:function(str){
 
 <style scoped>
 .main{
- background:#EDEEF0;
+   background-image: url('/static/img/mix.jpg');
+   background-attachment: fixed;
+   background-repeat: no-repeat;
+   background-size:cover; 
 }
 .heads
 {
