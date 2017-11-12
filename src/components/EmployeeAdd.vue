@@ -31,7 +31,7 @@
     </div>
     <div class="controls">
       <router-link to='/employeesForm'><button class="btn btn-success">Add employee</button></router-link>
-      <router-link class="link" to='/'><button class="btn btn-success">Back to Auth</button></router-link>
+      <router-link class="link" to='/calendar'><button class="btn btn-success">Back to Calendar</button></router-link>
     </div>
   </div>
 </template>
@@ -176,6 +176,10 @@
 .title{
   color: blue;
   font-size: 18px;
+}
+input
+{
+  width: 200px;
 }
 
 </style>

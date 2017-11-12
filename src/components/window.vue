@@ -4,7 +4,7 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="btnclose">
-            <button type="button" v-on:click="$emit('close')">close</button>
+            <button type="button" class="btn  btn-info" v-on:click="$emit('close')">close</button>
           </div>
           <h6>B.B. DETAILS</h6>
           <p v-if="success != ''" class="alert-danger" style="text-align: center;" >{{success}}</p>
@@ -69,12 +69,12 @@
             </table>
         <div v-if="success != 'success'">
           <div v-if="access == '2'">
-            <button  v-on:click="updateEvent()">Update</button>
-            <button v-on:click="deleteEvent(currentEventId)">Delete</button>
+            <button  v-on:click="updateEvent()" class="btn btn-secondary">Update</button>
+            <button v-on:click="deleteEvent(currentEventId)" class="btn btn-secondary">Delete</button>
           </div>
           <div v-if="(access == '1' && user.id == currentEventIdUser)">
-            <button  v-on:click="updateEvent()">Update</button>
-            <button v-on:click="deleteEvent(currentEventId)">Delete</button>
+            <button  v-on:click="updateEvent()" class="btn btn-secondary">Update</button>
+            <button v-on:click="deleteEvent(currentEventId)" class="btn btn-secondary">Delete</button>
           </div>
         </div>
       </div>
@@ -205,22 +205,30 @@
         var self = this
         self.error = ''
         var data = {}
+       
         self.timeStart = self.yearStart + '-' + self.monthStart + '-' +self.dateStart  + ' ' + self.StartHour + ':' + self.StartMinutes + ':' + '00' ;
         self.timeEnd = self.yearEnd + '-' + self.monthEnd + '-' +self.dateEnd  + ' ' + self.EndHour + ':' + self.EndMinutes + ':' + '00' ;
         data.id =  self.currentEventId 
-        data.id_user = self.currenForUsersVmodel;
+         if(self.access == 1)
+         {
+           data.id_user =  self.user.id
+         }else
+         {
+           data.id_user =  self.currenForUsersVmodel;
+         }
         data.id_room = self.roomIdCurrentEvent
         data.description = self.vModelForDescription
         data.time_start =  self.timeStart 
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
+      
         axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
         //axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
         .then(function(response){
           if (response)
           {  
             self.success = 'Update success'
-            self.$emit('refresh')
+            //self.$emit('refresh',response)
           }
           else {
             self.error = 'Error update!'
@@ -270,7 +278,7 @@
   width: 300px;
   margin: 0px auto;
   padding: 20px 30px;
-  background-color:  #3CB371;
+  background-color:  #40E0D0;
   border:2px solid red;
 }
 table tr td{
@@ -281,6 +289,7 @@ table tr th{
 }
 .btnclose{
   float: right;
+  padding-bottom: 8px;
 }
 .btn-section{
   text-align: center;
@@ -294,10 +303,7 @@ h6{
 th{
   width: 50px;
 }
-.checkA{
-  text-align: center;
-  margin-bottom: 10px;
-}
+
 .plusWidth{
   width: 420px;
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="regForm">
-      <p class="alert-danger">{{errorMsg}}</p>
+      <p class="alert-warning">{{errorMsg}}</p>
       <div v-if="success !== 'success'">
         <fieldset>
             <div id="legend">
@@ -22,6 +22,12 @@
                 <label class="control-label" for="password">password</label>
                 <div class="controls">
                     <input v-model="pass" type="password" id="password" name="password" placeholder="" >
+                </div>
+            </div>
+             <div class="control-group">
+                <label class="control-label" for="password">password confirm</label>
+                <div class="controls">
+                    <input v-model="passConfirm" type="password" id="password" name="password" placeholder="" >
                 </div>
             </div>
             <div class="control-group">
@@ -48,6 +54,7 @@
             login: '',
             pass: '',
             email:'',
+            passConfirm:'',
             passConf: '',
             config: {
                 headers: {
@@ -58,17 +65,81 @@
             errorMsg: ''
         }
     },
+    watch:{
+    
+    email:function()
+    {
+        var self = this
+        self.pattern = /^([a-z0-9_\.-])+@[a-z0-9-]+\.([a-z]{2,4}\.)?[a-z]{2,4}$/;
+        $(email).keyup(function(){
+            if(!self.pattern.test($(email).val()))
+            {
+                $(email).css('background-color', 'red')
+                self.emailWatch = false
+            }
+            else
+            {
+                $(email).css('background-color', 'white');
+                self.emailWatch = true
+            }
+        });      
+    },
+     login:function()
+    {
+        var self = this
+        self.patternLogin = /^[a-zA-Z1-9]+$/;
+        $(login).keyup(function(){
+            if(!self.patternLogin.test($(login).val()))
+            {
+                $(login).css('background-color', 'pink')
+                self.loginWatch = false
+            }
+            else
+            {
+                $(login).css('background-color', 'white');
+                self.loginWatch = true
+            }
+        });      
+    }
+    },
+
     methods: {
         registration: function () {
           var self = this
           self.errorMsg = ''
           if (self.login && self.pass && self.email)
           {
+               
+            if (self.login.length <= 3)
+            {
+              self.errorMsg = 'login should be at least 4 characters'
+                return false
+            }
+            if (self.login.length >=20 )
+            {
+              self.errorMsg = 'login should be not more 20 characters'
+                return false
+            }
+            if(!self.loginWatch)
+            {
+                self.errorMsg = 'Only latin letters in login'
+                return false
+            }
             if (self.pass.length <= 3)
             {
               self.errorMsg = 'Password should be at least 4 characters'
-                return false
+              return false
             }
+            if(self.pass !== self.passConfirm)
+            {
+                 self.errorMsg = 'Passwords do not match'
+                 return false
+            }
+           if(!self.emailWatch)
+           {
+                 self.errorMsg = 'Invalid email symbols'
+                  return false
+           }
             var data = new URLSearchParams();
             data.append('login', self.login);
             data.append('email', self.email);
@@ -92,6 +163,7 @@
           else{
               self.errorMsg =  'Enter data in all fields!'
           }
+          
       },
 
     checkUser: function(){
@@ -128,7 +200,8 @@
 }
 input
 {
-    height:30px;
+    height:40px;
+    width: 300px;
     border-radius:10px;
 }
 button

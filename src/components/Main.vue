@@ -11,7 +11,7 @@
       <div class="form-group">
         <button v-on:click="loginFun()" type="submit" class="btn btn-warning">Sign In</button>
       </div>
-      <p><span class="alert-danger">{{errorMsg}}</span></p>
+      <p><span class="alert-info">{{errorMsg}}</span></p>
     </div>
     <div v-else class="form-group">
        <router-link class="link" to='/calendar'><button class="btn btn-success">Back to Calendar, {{user.firstName}}</button></router-link>

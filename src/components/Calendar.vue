@@ -3,23 +3,23 @@
     <window v-if="showModal" :sentEvent="sentEvent" v-on:close="showModal = false"></window>
     <div class="row">
       <p class="rooms">
-        <button class="btn btn-default" v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
+        <button class="btn btn-light" v-for="(room,index) in rooms" v-on:click=" getAppointmentByIdUserBoardroomId(index)">{{room.name}}</button>
         <router-link :to="{name:'AddAppointment',params:{id:selRoom.id}}"><button class="btn btn-success">Book it</button></router-link>
         <router-link to='/EmployeeAdd'><button class="btn btn-success"  v-if="checkUser == 2">Employee List</button></router-link>  
         <button v-on:click="logoutFun()" type="submit" class="btn btn-primary exit">Exit</button>
-        <p><span class="">{{uservar}}</span></p>
+        <p><span class="hello">{{"Hello,"+uservar}}</span></p>
       </p>
       <p class="roomSel">
-        Room is: <strong>{{selRoom.name}}</strong>
+        Room is: <strong>{{fix}}</strong>
       </p> 
     </div>
     <div class="row">  
       <div class="col-md-5  solo"><h1>Boardroom Booker</h1></div>
     </div>
     <div class="title">
-      <p class="leftCursor" v-on:click="minusMonth()">«</p>
+      <p class="leftCursor" v-on:click="minusMonth()"><button class="btn btn-primary"><<</button></p>
       <p>{{getMonth[currentMonth]}} {{currentYear}}</p>
-      <p class="rightCursor" v-on:click="plusMonth()">»</p>
+      <p class="rightCursor" v-on:click="plusMonth()"><button class="btn btn-primary">>></button></p>
     </div>
     <table class="table table-bordered">
       <thead>
@@ -51,10 +51,8 @@
         dataInCalendar:'',
         rooms: [],
         timeData:{},
-        selRoom: {
-          id: '1',
-          name: ''
-        },
+        selRoom:1,
+        fix:{},
         counter: 2,
         typeC:'',
         inst_date: new Date(),
@@ -88,27 +86,23 @@
       //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
       .then(function (response) {
         self.rooms = response.data
-        self.selRoom = self.rooms[0]  
+         if(!localStorage['room'])
+         {
+            self.selRoom = self.rooms[0]
+             self.fix = self.selRoom.name
+            localStorage['room'] = JSON.stringify(self.fix)
+         }
+         else
+         {
+           self.selRoom = localStorage['room']
+           self.fix = JSON.parse(localStorage['room'])
+         }
       })
        .catch(function (error) {
           console.log(error)
       })
     },
-
-    getAppointmentByIdUserBoardroomId: function(index){
-      var self = this
-      self.selRoom = self.rooms[index]
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events'+  self.selRoom.id)
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' +  self.selRoom.id )
-      .then(function (response) {
-        self.eventsMonth = response.data
-        self.getArrayCalendar()
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
-    },
-
+     
     getAllEvents: function(){
       var self = this
       //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events')
@@ -122,11 +116,29 @@
       })
     },
 
+    getAppointmentByIdUserBoardroomId: function(index){
+      var self = this
+      self.selRoom = self.rooms[index]
+      self.fix = self.selRoom.name
+      localStorage['room'] = JSON.stringify(self.fix) 
+      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events'+  self.selRoom.id)
+      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' +  self.selRoom.id )
+      .then(function (response) {
+        self.eventsMonth = response.data
+        self.getArrayCalendar()
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+
     getMonthYear: function()
     {
       var self = this
+     
       self.currentMonth =self.date.getMonth()
       self.currentYear = self.date.getFullYear()
+     
     },
 
     getArrayCalendar: function(){
@@ -244,13 +256,13 @@
         self.currentMonth = 11
         self.currentYear -= 1
       }
-      self.getAllEvents()
       self.getArrayCalendar()
     },
 
      logoutFun: function(){
       var self = this
       delete localStorage['user'] 
+      delete localStorage['room']
        self.checkUser = ''
        self.$router.push("/");
     },
@@ -265,18 +277,20 @@
         .then(function (response) {
           if (self.user.hash === response.data[0].hash)
           {
+            
             if(response.data[0].role == "admin")
             {
               self.checkUser = 2;
               self.role = response.data[0].role
-              self.uservar = "Hello,"+ response.data[0].login
+              self.uservar = response.data[0].login
+              
               return true
             }
             if(response.data[0].role == "user")
             {
               self.checkUser = 1;
               self.role = response.data[0].role
-              self.uservar = "Hello,"+ response.data[0].login
+              self.uservar = response.data[0].login
               return true
             }
           }
@@ -323,7 +337,8 @@
       {
         return ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
       }
-    }
+    },
+   
     },
     computed: {
       getDays(){
@@ -353,8 +368,6 @@
     this.getAllEvents()
     this.getMonthYear()
     this.getRooms()
-    self.selRoom.id =1;
-    this.getAppointmentByIdUserBoardroomId(self.selRoom.id)  
   },
     components: {
       'window': Modalwindow
@@ -372,6 +385,11 @@
 .heads
 {
   background: red;
+}
+.hello
+{
+  color:blue;
+  font-size: 20px;
 }
 .leftCursor
 {
