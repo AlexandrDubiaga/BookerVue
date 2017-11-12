@@ -190,7 +190,7 @@
 
       getOneUser: function($id){
       var self = this
-         // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/',  + $id,  self.config)
+         // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/'  + $id,  self.config)
           axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + $id, self.config)
             .then(function (response) {
               //console.log(response)

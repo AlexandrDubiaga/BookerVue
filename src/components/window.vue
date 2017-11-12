@@ -110,6 +110,7 @@
         endDate:'',
         FullDateStart:'',
         success:'',
+        oneUserInModal:'',
         config: {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -255,9 +256,10 @@
     },
 
     created(){
+      var self = this
       this.checkUserFun()
-      this.getAllUsers()
-  }
+      this.getAllUsers()     
+    }
   }
 </script>
 

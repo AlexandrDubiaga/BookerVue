@@ -43,7 +43,6 @@
   data () {
     return {
       users:[],
-      checkUser:0,
       success:'',
       errorMsg:'',
       config: {

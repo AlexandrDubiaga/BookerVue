@@ -1,7 +1,7 @@
 <template>
   <div class="login navbar-form" >
     <div v-if="checkUser == ''">
-      <h1>Authorization</h1>
+      <h1 class="Authorization">Authorization</h1>
       <div class="form-group">
         <input v-model="login" type="text" class="form-control" name="username" placeholder="Username">
       </div>
@@ -134,35 +134,26 @@ export default {
 
 <style scoped>
 .login{
-  padding-top: 7px;
-  padding-bottom: 8px;
-  bottom: 7px;
+  padding-top: 10px;
+  padding-bottom: 480px;
+  background-image: url('/static/img/auth.jpg');
+   background-repeat: no-repeat;
+   background-size: cover;
+   margin-top:0px;
+   margin-bottom:0px;
 }
 .form-group{
   padding-bottom: 10px;
 }
-.regist{
-  margin-left: 30px;
-}
+
 .hello {
   font-weight: bold;
   font-size: 18px;
   color: darkblue;
 }
-.myCart {
-  position: absolute;
-  top: 10px;
-  left: 260px;
-}
-.admin{
-  position: absolute;
-  top: 84px;
-  left: 0px;
-}
-.myOrders
+.Authorization
 {
-   position: absolute;
-  top: 10px;
-  left: 150px;
+   color: snow;
 }
+
 </style>

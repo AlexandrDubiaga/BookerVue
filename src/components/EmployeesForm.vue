@@ -195,6 +195,12 @@
 }
 .regForm
 {
+   padding-top: 10px;
+   padding-bottom: 240px;
+   background-repeat: no-repeat;
+   background-size: cover;
+   margin-top:0px;
+   margin-bottom:0px;
    background-image: url('/static/img/edituser.jpg');
    background-attachment: fixed;
 }

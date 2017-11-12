@@ -10,7 +10,7 @@
         <p><span class="hello">{{"Hello,"+uservar}}</span></p>
       </p>
       <p class="roomSel">
-        Room is: <strong>{{fix}}</strong>
+        Room is: <strong class="roomSelIn">{{fix}}</strong>
       </p> 
     </div>
     <div class="row">  
@@ -386,9 +386,19 @@
 {
   background: red;
 }
+.roomSel
+{
+   color:#00FFFF;
+    font-size: 20px;
+}
+.roomSelIn
+{
+   color:slateblue;
+    font-size: 20px;
+}
 .hello
 {
-  color:blue;
+  color:sienna;
   font-size: 20px;
 }
 .leftCursor
