@@ -19,13 +19,13 @@
                     <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
                   </select>
                   <select v-model="StartMinutes">
-                    <option :value="StartMinutes * 15" v-for="StartMinutes in 4">{{StartMinutes * 15}}</option>
+                    <option :value="StartMinutes * 15" v-for="StartMinutes in 3">{{StartMinutes * 15}}</option>
                   </select>
                   <select  v-model="EndHour">
                     <option :value="EndHour"  v-for="EndHour in 24">{{EndHour}}</option>
                   </select>
                   <select v-model="EndMinutes">
-                    <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
+                    <option :value="EndMinutes * 15" v-for="EndMinutes in 3">{{EndMinutes * 15}}</option>
                   </select>
                 </td>
                 <td v-else-if="(access == '1' && user.id == currentEventIdUser)">
@@ -33,13 +33,13 @@
                     <option :value="StartHour"  v-for="StartHour in 12">{{StartHour}}</option>
                   </select>
                   <select v-model="StartMinutes">
-                    <option :value="StartMinutes * 15" v-for="StartMinutes in 4">{{StartMinutes * 15}}</option>
+                    <option :value="StartMinutes * 15" v-for="StartMinutes in 3">{{StartMinutes * 15}}</option>
                   </select>
                   <select  v-model="EndHour">
                     <option :value="EndHour"  v-for="EndHour in 24">{{EndHour}}</option>
                   </select>
                   <select v-model="EndMinutes">
-                    <option :value="EndMinutes * 15" v-for="EndMinutes in 4">{{EndMinutes * 15}}</option>
+                    <option :value="EndMinutes * 15" v-for="EndMinutes in 3">{{EndMinutes * 15}}</option>
                   </select>
                 </td>
                 <td v-else>{{timeStart}}</td>
@@ -57,7 +57,7 @@
                     <th>who:</th>
                     <td v-if="access == '2'">
                     <select class="selUser" v-model="currenForUsersVmodel">
-                        <option v-for="userRole in rolesArray" :value="userRole.id" >{{userRole.login}}</option>
+                        <option v-for="userRole in rolesArray" :value="userRole.id">{{userRole.login}}</option>
                     </select>
                     </td>
                     <td v-else-if="(access == '1')">Only for admin</td>
@@ -111,12 +111,14 @@
         FullDateStart:'',
         success:'',
         oneUserInModal:'',
+        
         config: {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'
           }
         },
        }
     },
+
     methods: {
       setProporties: function(){
         var self = this
@@ -127,9 +129,10 @@
         self.vModelForDescription = self.currentEvent.description
         self.curentIdUserInCurrentEvent = self.rolesArray.id
         self.curentCreateTime = self.currentEvent.create_time
-        self.currenForUsersVmodel = 1
+        self.currenForUsersVmodel = self.finalUserOne
         self.timeStart =  self.currentEvent.time_start
         self.timeEnd =  self.currentEvent.time_end
+        
         self.startTime = new Date(self.timeStart);
         self.monthsStart = ['01','02','03','04','05','06','07','08','09','10','11','12'];
         self.yearStart = self.startTime.getFullYear();
@@ -137,11 +140,8 @@
         self.dateStart =  self.startTime.getDate();
         self.StartHour = self.startTime.getHours();
         self.StartMinutes =  self.startTime.getMinutes();
+
         self.endTime = new Date(self.timeEnd);
-        self.monthsEnd = ['01','02','03','04','05','06','07','08','09','10','11','12'];
-        self.yearEnd = self.endTime.getFullYear();
-        self.monthEnd = self.monthsEnd[self.endTime.getMonth()];
-        self.dateEnd =  self.endTime.getDate();
         self.EndHour = self.endTime.getHours();
         self.EndMinutes =  self.endTime.getMinutes();
       },
@@ -163,6 +163,26 @@
         });
       },
 
+       getAdmins: function($id){
+      var self = this
+         // axios.get('http://192.168.0.15/~user2/Booker/client/api/modalemployee/' + $id,  self.config)
+          axios.get('http://BoardroomBooker/user2/Booker/client/api/modalemployee/' + $id)
+            .then(function (response) {
+              if (response.status == 200) {
+                  self.oneUserInModal = response.data;   
+                  self.finalUserOne = self.oneUserInModal[0].id        
+              }
+            else{
+              self.errors = response.data
+            }
+        })
+        .catch(function (error) {
+          console.log(error)
+        });
+      },
+
+     
+
       checkUserFun: function(){
         var self = this
         if (localStorage['user'])
@@ -176,6 +196,7 @@
               self.role = response.data[0].role
               self.checkUserRole()
               self.setProporties()  
+             
               return true
             }
           })
@@ -208,7 +229,7 @@
         var data = {}
        
         self.timeStart = self.yearStart + '-' + self.monthStart + '-' +self.dateStart  + ' ' + self.StartHour + ':' + self.StartMinutes + ':' + '00' ;
-        self.timeEnd = self.yearEnd + '-' + self.monthEnd + '-' +self.dateEnd  + ' ' + self.EndHour + ':' + self.EndMinutes + ':' + '00' ;
+        self.timeEnd = self.yearStart + '-' + self.monthStart + '-' +self.dateStart  + ' ' + self.EndHour + ':' + self.EndMinutes + ':' + '00' ;
         data.id =  self.currentEventId 
          if(self.access == 1)
          {
@@ -222,10 +243,11 @@
         data.time_start =  self.timeStart 
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
-      
+     
         axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
         //axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
         .then(function(response){
+          console.log(response)
           if (response)
           {  
             self.success = 'Update success'
@@ -257,8 +279,10 @@
 
     created(){
       var self = this
+      this.getAdmins(self.sentEvent.id)
       this.checkUserFun()
       this.getAllUsers()     
+     
     }
   }
 </script>

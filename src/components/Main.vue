@@ -134,9 +134,9 @@ export default {
 
 <style scoped>
 .login{
-  padding-top: 10px;
-  padding-bottom: 480px;
-  background-image: url('/static/img/auth.jpg');
+   padding-top: 10px;
+   padding-bottom: 480px;
+   background-image: url('/static/img/auth.jpg');
    background-repeat: no-repeat;
    background-size: cover;
    margin-top:0px;
