@@ -1,30 +1,27 @@
 <template>
   <div class="login navbar-form" >
-  <h1>Авторизация</h1>
     <div v-if="checkUser == ''">
-        <div class="form-group">
-            <input v-model="login" type="text" class="form-control" name="username" placeholder="Username">
-        </div>
-        <div class="form-group">
-            <input v-model="pass" type="password" class="form-control" name="password" placeholder="Password">
-        </div>
-         <div class="form-group">
-           <button v-on:click="loginFun()" type="submit" class="btn btn-warning">Sign In</button>
-        </div>
-       
-        <p><span class="alert-danger">{{errorMsg}}</span></p>
+      <h1>Authorization</h1>
+      <div class="form-group">
+        <input v-model="login" type="text" class="form-control" name="username" placeholder="Username">
+      </div>
+      <div class="form-group">
+        <input v-model="pass" type="password" class="form-control" name="password" placeholder="Password">
+      </div>
+      <div class="form-group">
+        <button v-on:click="loginFun()" type="submit" class="btn btn-warning">Sign In</button>
+      </div>
+      <p><span class="alert-danger">{{errorMsg}}</span></p>
     </div>
-    
     <div v-else class="form-group">
-     
-    </div>
+       <router-link class="link" to='/calendar'><button class="btn btn-success">Back to Calendar, {{user.firstName}}</button></router-link>
+     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 export default {
- 
   data () {
     return {
       login: '',
@@ -45,23 +42,22 @@ export default {
     }
   }, 
   methods: {
-     getCheck: function(){
-                var self = this
-                if (localStorage['id'] && localStorage['hash'])
-                {
-                
-                    self.checkUser = 1
-                }
-                else{
-                    self.checkUser = ''
-                }
-            },
+    getCheck: function(){
+      var self = this
+      if (localStorage['id'] && localStorage['hash'])
+      {
+        self.checkUser = 1
+      }
+      else{
+        self.checkUser = ''
+      }
+    },
     loginFun: function(){
       var self = this
       self.errorMsg = ''
         if (self.login && self.pass)
         {
-         //axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
+          //axios.put('http://192.168.0.15/~user2/Booker/client/api/users/', {
           axios.put('http://BoardroomBooker/user2/Booker/client/api/users/', {
             login: self.login,
             pass: self.pass 
@@ -69,7 +65,6 @@ export default {
           .then(function (response) {
             if (response.data.id && response.data.hash)
             {
-            
               self.user.id = response.data.id
               self.user.hash = response.data.hash 
               self.user.firstName = response.data.login
@@ -78,19 +73,18 @@ export default {
               self.checkUserFun()
               self.getCheck()
             if (response.data.role) {
-                  self.$router.push("/calendar");
-                }
-                else
-                {
-                  self.$router.push("/");
-                }
+              self.$router.push("/calendar");
+            }
+            else
+            {
+              self.$router.push("/");
+            }
             return true;
-          } else {
+           }else {
            
-             self.errorMsg = 'Wrong password or login'
-            
-          }
-        })
+              self.errorMsg = 'Wrong password or login'
+           }
+         })
           .catch(function (error) {
             console.log(error)
           });
@@ -99,59 +93,47 @@ export default {
         {
           self.errorMsg = 'Enter data in all fields!'
         }
-    },
-    checkUserFun: function(){
-      var self = this
-      if (localStorage['user'])
-      {    
-        self.user = JSON.parse(localStorage['user'])
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-         axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+      },
+      checkUserFun: function(){
+        var self = this
+        if (localStorage['user'])
+        {    
+          self.user = JSON.parse(localStorage['user'])
+          //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+            axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
             .then(function (response) {
-              console.log(response)
-                if (self.user.hash === response.data[0].hash)
-                {
-                      
-                    self.checkUser = 1;
-                    self.role = response.data[0].role
-                    return true
-                }
-                else
-                {
-                  self.checkUser = ''
-                  
-                  delete localStorage['user']
-                }
+            if (self.user.hash === response.data[0].hash)
+            {
+              self.checkUser = 1;
+              self.role = response.data[0].role
+              return true
+            }
+            else
+            {
+              self.checkUser = ''
+              delete localStorage['user']
+            }
             })
             .catch(function (error) {
               console.log(error)
             });
-      }
-      else{
-        self.checkUser = ''
-        return false
-      }
-    },
-    logoutFun: function(){
-      var self = this
-      delete localStorage['user']
-      self.checkUser = ''
-      self.pass = ''
-      self.getCheck()
-    },
+          }
+        else{
+          self.checkUser = ''
+          return false
+        }
+      },
   },
   created(){
     this.checkUserFun()
-      this.deleteEmployeeById()
+    this.deleteEmployeeById()
     this.putEmployeeById()
   },
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .login{
- 
   padding-top: 7px;
   padding-bottom: 8px;
   bottom: 7px;
