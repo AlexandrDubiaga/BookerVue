@@ -144,8 +144,8 @@
             data.append('login', self.login);
             data.append('email', self.email);
             data.append('pass', self.pass);
-            axios.post('http://BoardroomBooker/user2/Booker/client/api/employees/', data, self.config)
-            //axios.post('http://192.168.0.15/~user2/Booker/client/api/employees/', data, self.config)
+            //axios.post('http://BoardroomBooker/user2/Booker/client/api/employees/', data, self.config)
+            axios.post('http://192.168.0.15/~user2/Booker/client/api/employees/', data, self.config)
             .then(function (response) {
                 if (response.data === 1)
                 {

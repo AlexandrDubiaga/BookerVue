@@ -82,8 +82,8 @@
       
     getRooms: function(){
       var self = this
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/rooms/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/')
       .then(function (response) {
         self.rooms = response.data
          if(!localStorage['room'])
@@ -105,9 +105,10 @@
      
     getAllEvents: function(){
       var self = this
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events')
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/events/' +1)
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/')
       .then(function (response) {
+        //console.log(response)
         self.eventsMonth = response.data
         self.getArrayCalendar()   
       })
@@ -121,9 +122,10 @@
       self.selRoom = self.rooms[index]
       self.fix = self.selRoom.name
       localStorage['room'] = JSON.stringify(self.fix) 
-      //axios.get('http://192.168.0.15/~user2/Booker/client/api/rooms/events'+  self.selRoom.id)
-      axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' +  self.selRoom.id )
+      axios.get('http://192.168.0.15/~user2/Booker/client/api/events/'+  self.selRoom.id)
+      //axios.get('http://BoardroomBooker/user2/Booker/client/api/events/' +  self.selRoom.id )
       .then(function (response) {
+        //console.log(response)
         self.eventsMonth = response.data
         self.getArrayCalendar()
       })
@@ -131,7 +133,7 @@
         console.log(error)
       })
     },
-
+  
     getMonthYear: function()
     {
       var self = this
@@ -172,10 +174,12 @@
           if (day[0]){
             self.eventsMonth.forEach(function(event)
             {
+              
               var x = new Date(event.time_start)
               if(x.getMonth() == self.currentMonth){
-                if (event.id_room == self.selRoom.id)
+                if (event.id_room ==  self.selRoom.id)
                 {
+                 //console.log(self.eventsMonth)
                   var dateEvStart = new Date(event.time_start)
                   var dateEvEnd = new Date(event.time_end)
                   var date = new Date(self.currentYear, self.currentMonth+1, day[0])
@@ -208,12 +212,48 @@
                       day[1].push(event)
                     }
                   }
+                }else if(event.id_room == 1)
+                {
+                   var dateEvStart = new Date(event.time_start)
+                  var dateEvEnd = new Date(event.time_end)
+                  var date = new Date(self.currentYear, self.currentMonth+1, day[0])
+                  if (dateEvStart.getDate() === day[0])
+                  {
+                    var str = ''
+                    var start = dateEvStart.getHours()
+                    var end = dateEvEnd.getHours()
+                    if (dateEvStart.getMinutes() == 0)
+                    {
+                      start +=':' + dateEvStart.getMinutes() + '0-'
+                    }
+                    else{
+                      start +=':' + dateEvStart.getMinutes() + '-'
+                    }
+                    if (dateEvEnd.getMinutes() == 0)
+                    {
+                      end += ':' + dateEvEnd.getMinutes() + '0'
+                    }
+                    else{
+                      end += ':' + dateEvEnd.getMinutes() 
+                    }
+                    str = start + end
+                    event.timeString = str
+                    if (day.length == 1)
+                    {
+                      day.push([event])
+                    }
+                    else{
+                      day[1].push(event)
+                    }
+                  }
+                 
                 }
               }
             })
           }
         })
       });
+      
     },
     getNumDay: function(date){
       var self = this
@@ -272,8 +312,8 @@
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-      // axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-        axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+       axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+        //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
         .then(function (response) {
           if (self.user.hash === response.data[0].hash)
           {
@@ -365,6 +405,7 @@
   created(){
     var self = this
     this.checkUserFun()
+    this.getArrayCalendar()
     this.getAllEvents()
     this.getMonthYear()
     this.getRooms()

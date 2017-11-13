@@ -39,7 +39,7 @@
 <script>
   import axios from 'axios'
   export default {
-  name: 'EmployeesAdd',
+  name: 'EmployeeAdd',
   data () {
     return {
       users:[],
@@ -56,8 +56,8 @@
   methods: {
     getAllUsers: function(){
       var self = this
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-        axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+        //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
         .then(function (response) {
           if (response.status == 200) {
             self.users = response.data;
@@ -73,8 +73,8 @@
 
       deleteEmployeeById: function($id){
       var self = this
-      axios.delete('http://BoardroomBooker/user2/Booker/client/api/users/' + $id)
-      //axios.delete('http://192.168.0.15/~user2/Booker/client/api/users/' + $id)
+      //axios.delete('http://BoardroomBooker/user2/Booker/client/api/users/' + $id)
+      axios.delete('http://192.168.0.15/~user2/Booker/client/api/users/' + $id)
       .then(function (response) {
         if (response.data === 1)
         {
@@ -96,8 +96,8 @@
       if (localStorage['user'])
       {    
         self.user = JSON.parse(localStorage['user'])
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-        axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+        //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
         .then(function (response) {
           if (self.user.hash === response.data[0].hash)
           {
@@ -130,8 +130,8 @@
       var self = this        
       var data = {}
       data = self.users[index]
-      //axios.put('http://192.168.0.15/~user2/Booker/client/api/employees/', data, self.config)
-      axios.put('http://BoardroomBooker/user2/Booker/client/api/employees/', data, self.config)
+      axios.put('http://192.168.0.15/~user2/Booker/client/api/employees/', data, self.config)
+      //axios.put('http://BoardroomBooker/user2/Booker/client/api/employees/', data, self.config)
       .then(function (response) {
         if (response.data === 1)
         {

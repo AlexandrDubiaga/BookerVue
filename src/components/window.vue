@@ -148,8 +148,8 @@
 
       getAllUsers: function(){
         var self = this
-        //axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
-        axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
+        axios.get('http://192.168.0.15/~user2/Booker/client/api/employees/', self.config)
+        //axios.get('http://BoardroomBooker/user2/Booker/client/api/employees/', self.config)
         .then(function (response) {
           if (response.status == 200) {
             self.rolesArray = response.data;
@@ -165,8 +165,8 @@
 
        getAdmins: function($id){
       var self = this
-         // axios.get('http://192.168.0.15/~user2/Booker/client/api/modalemployee/' + $id,  self.config)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/modalemployee/' + $id)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/modalemployee/' + $id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/modalemployee/' + $id)
             .then(function (response) {
               if (response.status == 200) {
                   self.oneUserInModal = response.data;   
@@ -188,8 +188,8 @@
         if (localStorage['user'])
         {    
           self.user = JSON.parse(localStorage['user'])
-          //axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
-          axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
+          axios.get('http://192.168.0.15/~user2/Booker/client/api/users/' + self.user.id)
+          //axios.get('http://BoardroomBooker/user2/Booker/client/api/users/' + self.user.id)
           .then(function (response) {
             if (self.user.hash === response.data[0].hash)
             {
@@ -244,8 +244,8 @@
         data.time_end =    self.timeEnd
         data.create_time =   (Date.now()/1000).toFixed()
      
-        axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
-        //axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
+        //axios.put('http://BoardroomBooker/user2/Booker/client/api/events/', data, self.config)
+        axios.put('http://192.168.0.15/~user2/Booker/client/api/events/', data, self.config)
         .then(function(response){
           console.log(response)
           if (response)
@@ -261,8 +261,8 @@
 
       deleteEvent: function($id){
       var self = this
-      axios.delete('http://BoardroomBooker/user2/Booker/client/api/events/' + $id)
-      //axios.delete('http://192.168.0.15/~user2/Booker/client/api/events/' + $id)
+      //axios.delete('http://BoardroomBooker/user2/Booker/client/api/events/' + $id)
+      axios.delete('http://192.168.0.15/~user2/Booker/client/api/events/' + $id)
       .then(function (response) {
         if (response.data)
         {
